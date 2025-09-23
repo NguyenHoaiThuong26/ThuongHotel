@@ -2,24 +2,27 @@ package com.hoaithuong.HotelManagement.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "roles")
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roleId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String roleId;
 
-    private String roleName;
+    String roleName;
 
-    @OneToMany(mappedBy = "role")
-    private List<User> users;
+    @ManyToMany(mappedBy = "roles")
+    Set<User> users;
 }
 
