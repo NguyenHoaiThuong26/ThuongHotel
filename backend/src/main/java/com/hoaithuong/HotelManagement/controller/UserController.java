@@ -3,6 +3,7 @@ package com.hoaithuong.HotelManagement.controller;
 import com.hoaithuong.HotelManagement.dto.request.ApiResponse;
 import com.hoaithuong.HotelManagement.dto.request.UserCreationRequest;
 import com.hoaithuong.HotelManagement.dto.request.UserUpdateRequest;
+import com.hoaithuong.HotelManagement.dto.response.UserResponse;
 import com.hoaithuong.HotelManagement.entity.User;
 import com.hoaithuong.HotelManagement.service.UserService;
 import jakarta.validation.Valid;
@@ -22,8 +23,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request){
-        ApiResponse<User> apiResponse = new ApiResponse<>();
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request){
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(userService.createUser(request));
 
@@ -31,17 +32,17 @@ public class UserController {
     }
 
     @GetMapping
-    List<User> getUsers(){
+    List<UserResponse> getUsers(){
         return userService.getUsers();
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable("userId") String userId){
+    UserResponse getUser(@PathVariable("userId") String userId){
         return userService.getUser(userId);
     }
 
     @PutMapping("/{userId}")
-    User updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+    UserResponse updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
         return userService.updateUser(userId, request);
     }
 

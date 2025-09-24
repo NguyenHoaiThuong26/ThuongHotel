@@ -2,64 +2,62 @@ package com.hoaithuong.HotelManagement.service;
 
 import com.hoaithuong.HotelManagement.dto.request.UserCreationRequest;
 import com.hoaithuong.HotelManagement.dto.request.UserUpdateRequest;
+import com.hoaithuong.HotelManagement.dto.response.UserResponse;
 import com.hoaithuong.HotelManagement.entity.User;
 import com.hoaithuong.HotelManagement.exception.AppException;
 import com.hoaithuong.HotelManagement.exception.ErrorCode;
+import com.hoaithuong.HotelManagement.mapper.UserMapper;
 import com.hoaithuong.HotelManagement.repository.UserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
     UserRepository userRepository;
+    UserMapper userMapper;
 
-    public User createUser(UserCreationRequest request) {
-        User user = new User();
-
+    public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setAddress(request.getAddress());
-        user.setDateOfBirth(request.getDateOfBirth());
-        user.setPhone(request.getPhone());
+        User user = userMapper.toUser(request);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
 
     }
 
-    public User updateUser(String userId, UserUpdateRequest request) {
-        User user = getUser(userId);
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setAddress(request.getAddress());
-        user.setDateOfBirth(request.getDateOfBirth());
-        user.setPhone(request.getPhone());
+        userMapper.updateUser(user, request);
 
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public void deleteUser(String userId){
         userRepository.deleteById(userId);
     }
 
-    public List<User> getUsers(){
-        return userRepository.findAll();
+    public List<UserResponse> getUsers(){
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse).toList();
     }
 
-    public User getUser(String id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public UserResponse getUser(String id){
+        return userMapper.toUserResponse(userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
 
