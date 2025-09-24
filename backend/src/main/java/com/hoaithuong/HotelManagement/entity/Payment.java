@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,16 +15,17 @@ import java.util.List;
 @Table(name = "payments")
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long paymentId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String paymentId;
 
     @OneToOne
     @JoinColumn(name = "booking_id")
-    private Booking booking;
+    Booking booking;
 
-    private String method;
-    private String status;
-    private Double amount;
-    private String transactionId;
+    String method;
+    String status;
+    Double amount;
+    String transactionId;
+    LocalDateTime createAt;
 }
 

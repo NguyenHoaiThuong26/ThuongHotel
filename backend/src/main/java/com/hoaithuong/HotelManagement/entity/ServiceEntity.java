@@ -2,25 +2,27 @@ package com.hoaithuong.HotelManagement.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "services")
 public class ServiceEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long serviceId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String serviceId;
 
-    private String serviceName;
-    private Double price;
-    private String description;
+    String serviceName;
+    Double price;
+    String description;
 
     @ManyToMany(mappedBy = "services")
-    private List<Booking> bookings;
+    List<Booking> bookings;
 }
 
