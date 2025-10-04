@@ -3,10 +3,12 @@ package com.hoaithuong.HotelManagement.service;
 import com.hoaithuong.HotelManagement.dto.request.UserCreationRequest;
 import com.hoaithuong.HotelManagement.dto.request.UserUpdateRequest;
 import com.hoaithuong.HotelManagement.dto.response.UserResponse;
+import com.hoaithuong.HotelManagement.entity.Role;
 import com.hoaithuong.HotelManagement.entity.User;
 import com.hoaithuong.HotelManagement.exception.AppException;
 import com.hoaithuong.HotelManagement.exception.ErrorCode;
 import com.hoaithuong.HotelManagement.mapper.UserMapper;
+import com.hoaithuong.HotelManagement.repository.RoleRepository;
 import com.hoaithuong.HotelManagement.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ import java.util.List;
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
+    RoleRepository roleRepository;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername()))
@@ -32,6 +37,15 @@ public class UserService {
         User user = userMapper.toUser(request);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // 🔑 Lấy role "USER" từ DB
+        Role userRole = roleRepository.findByRoleName("USER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        // Gán role vào user
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
+        user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
 
