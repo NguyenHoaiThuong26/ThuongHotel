@@ -8,6 +8,7 @@ public enum ErrorCode {
     INVALID_PASSWORD(1004, "Password must be at least 8 characters"),
     USER_NOT_EXISTED(1005, "User not existed"),
     UNAUTHENTICATED(1006, "Unauthenticated"),
+    ROLE_NOT_FOUND(1006, "Role not found")
     ;
 
     ErrorCode(int code, String message) {
