@@ -1,10 +1,7 @@
 package com.hoaithuong.HotelManagement.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
@@ -15,9 +12,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "roles")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     String roleId;
 
     String roleName;
