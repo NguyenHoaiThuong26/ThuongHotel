@@ -19,9 +19,18 @@ public class Role {
     @EqualsAndHashCode.Include
     String roleId;
 
+    @Column(nullable = false, unique = true)
     String roleName;
 
     @ManyToMany(mappedBy = "roles")
     Set<User> users;
+
+    @ManyToMany
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions;
 }
 

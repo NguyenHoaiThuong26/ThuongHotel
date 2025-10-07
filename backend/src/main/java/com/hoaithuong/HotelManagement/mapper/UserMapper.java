@@ -5,6 +5,7 @@ import com.hoaithuong.HotelManagement.dto.request.UserUpdateRequest;
 import com.hoaithuong.HotelManagement.dto.response.UserResponse;
 import com.hoaithuong.HotelManagement.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.Set;
@@ -17,6 +18,7 @@ public interface UserMapper {
 
     UserResponse toUserResponse(User user);
 
+    @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 
     default Set<String> mapRolesToStrings(Set<com.hoaithuong.HotelManagement.entity.Role> roles) {

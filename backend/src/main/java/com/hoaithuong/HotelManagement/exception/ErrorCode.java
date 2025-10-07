@@ -14,7 +14,8 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
-    ROLE_NOT_FOUND(1008, "Role not found", HttpStatus.NOT_FOUND)
+    ROLE_NOT_FOUND(1008, "Role not found", HttpStatus.NOT_FOUND),
+    PERMISSION_NOT_FOUND(1009, "Permission not found", HttpStatus.NOT_FOUND)
 
     ;
 
