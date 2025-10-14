@@ -15,7 +15,14 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     ROLE_NOT_FOUND(1008, "Role not found", HttpStatus.NOT_FOUND),
-    PERMISSION_NOT_FOUND(1009, "Permission not found", HttpStatus.NOT_FOUND)
+    PERMISSION_NOT_FOUND(1009, "Permission not found", HttpStatus.NOT_FOUND),
+    ROOM_NOT_FOUND(1010, "Room not found", HttpStatus.NOT_FOUND),
+    ROOM_ALREADY_EXISTS(1011, "Room already exists", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_NOT_FOUND(1012, "Room type not found", HttpStatus.NOT_FOUND),
+    INVALID_ROOM_STATUS(1013, "Invalid room status", HttpStatus.BAD_REQUEST),
+    ROOM_DELETE_FAILED(1014, "Cannot delete room due to related bookings or images", HttpStatus.CONFLICT)
+    ;
+
 
     ;
 
