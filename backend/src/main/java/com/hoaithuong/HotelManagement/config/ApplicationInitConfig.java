@@ -30,8 +30,6 @@ public class ApplicationInitConfig {
     ApplicationRunner applicationRunner() {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
-
-                // 🔑 Lấy role ADMIN từ DB
                 Role adminRole = roleRepository.findByRoleName("ADMIN")
                         .orElseThrow(() -> new RuntimeException("Role ADMIN not found in DB. Hãy insert sẵn vào bảng roles."));
 
