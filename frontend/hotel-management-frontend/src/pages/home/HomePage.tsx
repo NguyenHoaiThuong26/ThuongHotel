@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Link } from 'react-router-dom'
 import {
   Star,
@@ -9,19 +8,12 @@ import {
   Dumbbell,
   Car,
   Droplets,
-  MapPin,
-  Phone,
-  Mail,
-  Facebook,
-  Instagram,
-  Twitter,
 } from "lucide-react"
 import Navbar from "../../components/layout/navbar"
 import Footer from "../../components/layout/footer"
 import { Button } from "../../components/ui/button"
 
 export default function HomePage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const rooms = [
     {
