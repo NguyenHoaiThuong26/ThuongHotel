@@ -20,28 +20,28 @@ export default function HomePage() {
       id: 1,
       name: "Deluxe Suite",
       price: "$299",
-      image: "/luxury-hotel-deluxe-suite.jpg",
+      image: "/images/luxury-hotel-deluxe-suite.jpg",
       description: "Spacious suite with city views and modern amenities",
     },
     {
       id: 2,
       name: "Ocean View Room",
       price: "$349",
-      image: "/luxury-hotel-ocean-view.jpg",
+      image: "/images/luxury-hotel-ocean-view.jpg",
       description: "Premium room overlooking the ocean with private balcony",
     },
     {
       id: 3,
       name: "Presidential Suite",
       price: "$599",
-      image: "/luxury-hotel-presidential-suite.jpg",
+      image: "/images/luxury-hotel-presidential-suite.jpg",
       description: "Ultimate luxury with separate living and dining areas",
     },
     {
       id: 4,
       name: "Garden Room",
       price: "$249",
-      image: "/luxury-hotel-garden-view.jpg",
+      image: "/images/luxury-hotel-garden-view.jpg",
       description: "Serene room with access to our private gardens",
     },
   ]
@@ -60,21 +60,21 @@ export default function HomePage() {
       name: "Sarah Johnson",
       rating: 5,
       comment: "Exceptional service and breathtaking views. A truly unforgettable experience.",
-      image: "/profile-woman.jpg",
+      image: "/images/profile-woman.jpg",
     },
     {
       id: 2,
       name: "Michael Chen",
       rating: 5,
       comment: "The attention to detail is remarkable. Every moment felt special.",
-      image: "/profile-man.jpg",
+      image: "/images/profile-man.jpg",
     },
     {
       id: 3,
       name: "Emma Wilson",
       rating: 5,
       comment: "Luxurious accommodations paired with outstanding hospitality.",
-      image: "/profile-woman-2.jpg",
+      image: "/images/profile-woman-2.jpg",
     },
   ]
 
@@ -86,7 +86,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src="/luxury-hotel-lobby-grand.jpg" alt="Hero background" className="w-full h-full object-cover" />
+          <img src="/images/luxury-hotel-lobby-grand.jpg" alt="Hero background" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20"></div>
         </div>
 
@@ -109,7 +109,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               <img
-                src="/luxury-hotel-room-interior.jpg"
+                src="/images/luxury-hotel-room-interior.jpg"
                 alt="Hotel room"
                 className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow"
               />
