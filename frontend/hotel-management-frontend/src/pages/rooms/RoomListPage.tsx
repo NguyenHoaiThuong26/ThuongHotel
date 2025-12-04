@@ -7,119 +7,181 @@ import Footer from "../../components/layout/footer"
 import RoomCard from "../../components/room/roomCard"
 import type { RoomCardProps } from "../../components/room/roomCard"
 
+// Bản dịch tiện nghi sang tiếng Việt
+const translateAmenities = (amenities: string[]) => {
+  return amenities.map((amenity) => {
+    switch (amenity) {
+      case "AC":
+        return "Điều hòa"
+      case "WiFi":
+        return "WiFi"
+      case "TV":
+        return "TV"
+      case "Mini Bar":
+        return "Mini Bar"
+      case "Jacuzzi":
+        return "Bồn tắm Jacuzzi"
+      case "Terrace":
+        return "Sân hiên"
+      case "Spa":
+        return "Spa"
+      case "Chef Kitchen":
+        return "Bếp riêng"
+      case "Butler Service":
+        return "Dịch vụ hầu phòng"
+      case "Garden Access":
+        return "Lối ra vườn"
+      case "Work Desk":
+        return "Bàn làm việc"
+      case "High-Speed Internet":
+        return "Internet tốc độ cao"
+      case "Spa Tub":
+        return "Bồn tắm Spa"
+      case "Rose Petals":
+        return "Cánh hoa hồng"
+      case "Champagne":
+        return "Rượu Champagne"
+      case "Pool":
+        return "Hồ bơi"
+      case "Kitchenette":
+        return "Gian bếp nhỏ"
+      case "Living Area":
+        return "Khu vực sinh hoạt"
+      case "Rooftop Access":
+        return "Lối lên sân thượng"
+      case "Skybar":
+        return "Skybar"
+      case "Private Elevator":
+        return "Thang máy riêng"
+      case "Porch":
+        return "Hiên"
+      case "Nature Trail Access":
+        return "Lối đi thiên nhiên"
+      case "AV Equipment":
+        return "Thiết bị AV"
+      case "Catering":
+        return "Dịch vụ ăn uống"
+      case "Multiple Rooms":
+        return "Nhiều phòng"
+      default:
+        return amenity
+    }
+  })
+}
 
 const ROOMS_DATA: RoomCardProps[] = [
   {
     id: 1,
-    name: "Deluxe Room",
+    name: "Phòng Deluxe Cao Cấp",
     type: "Standard",
-    description: "Comfortable room with city views and modern amenities",
+    description: "Phòng thoải mái với tầm nhìn thành phố và tiện nghi hiện đại",
     price: 149,
     image: "/images/luxury-hotel-deluxe-suite.jpg",
     status: "Available",
     capacity: 2,
-    amenities: ["AC", "WiFi", "TV", "Mini Bar"],
+    amenities: translateAmenities(["AC", "WiFi", "TV", "Mini Bar"]),
   },
   {
     id: 2,
-    name: "Ocean View Suite",
+    name: "Suite Hướng Biển Cao Cấp",
     type: "Suite",
-    description: "Premium suite overlooking the ocean with private balcony",
+    description: "Suite cao cấp nhìn ra biển với ban công riêng",
     price: 249,
     image: "/images/luxury-hotel-ocean-view.jpg",
     status: "Available",
     capacity: 4,
-    amenities: ["AC", "WiFi", "TV", "Jacuzzi", "Terrace"],
+    amenities: translateAmenities(["AC", "WiFi", "TV", "Jacuzzi", "Terrace"]),
   },
   {
     id: 3,
-    name: "Presidential Suite",
+    name: "Suite Tổng Thống",
     type: "Luxury",
-    description: "Ultimate luxury with separate living and dining areas",
+    description: "Sang trọng tối đa với khu vực phòng khách và ăn riêng",
     price: 599,
     image: "/images/luxury-hotel-presidential-suite.jpg",
     status: "Booked",
     capacity: 6,
-    amenities: ["AC", "WiFi", "TV", "Spa", "Chef Kitchen", "Butler Service"],
+    amenities: translateAmenities(["AC", "WiFi", "TV", "Spa", "Chef Kitchen", "Butler Service"]),
   },
   {
     id: 4,
-    name: "Garden Room",
+    name: "Phòng Hướng Vườn",
     type: "Standard",
-    description: "Serene room with access to private gardens",
+    description: "Phòng yên tĩnh với lối ra vườn riêng",
     price: 129,
     image: "/images/luxury-hotel-garden-view.jpg",
     status: "Available",
     capacity: 2,
-    amenities: ["AC", "WiFi", "TV", "Garden Access"],
+    amenities: translateAmenities(["AC", "WiFi", "TV", "Garden Access"]),
   },
   {
     id: 5,
-    name: "Business Executive",
+    name: "Phòng Doanh Nhân Executive",
     type: "Standard",
-    description: "Modern room designed for business travelers with work desk",
+    description: "Phòng hiện đại dành cho khách doanh nhân với bàn làm việc",
     price: 179,
     image: "/images/business-hotel-room.jpg",
     status: "Available",
     capacity: 2,
-    amenities: ["AC", "WiFi", "TV", "Work Desk", "High-Speed Internet"],
+    amenities: translateAmenities(["AC", "WiFi", "TV", "Work Desk", "High-Speed Internet"]),
   },
   {
     id: 6,
-    name: "Honeymoon Suite",
+    name: "Suite Tuần Trăng Mật",
     type: "Suite",
-    description: "Romantic suite perfect for couples with spa amenities",
+    description: "Suite lãng mạn hoàn hảo cho các cặp đôi với tiện nghi spa",
     price: 349,
     image: "/images/romantic-hotel-suite.jpg",
     status: "Available",
     capacity: 2,
-    amenities: ["AC", "WiFi", "Spa Tub", "Rose Petals", "Champagne"],
+    amenities: translateAmenities(["AC", "WiFi", "Spa Tub", "Rose Petals", "Champagne"]),
   },
   {
     id: 7,
-    name: "Family Villa",
+    name: "Biệt Thự Gia Đình",
     type: "Villa",
-    description: "Spacious villa with multiple bedrooms for family stays",
+    description: "Biệt thự rộng rãi với nhiều phòng ngủ cho gia đình",
     price: 449,
     image: "/images/family-villa-resort.jpg",
     status: "Booked",
     capacity: 8,
-    amenities: ["AC", "WiFi", "TV", "Pool", "Kitchenette", "Living Area"],
+    amenities: translateAmenities(["AC", "WiFi", "TV", "Pool", "Kitchenette", "Living Area"]),
   },
   {
     id: 8,
-    name: "Penthouse",
+    name: "Penthouse Cao Cấp",
     type: "Luxury",
-    description: "Exclusive penthouse with 360-degree city views",
+    description: "Penthouse độc quyền với tầm nhìn 360 độ thành phố",
     price: 799,
     image: "/images/penthouse-luxury-room.jpg",
     status: "Available",
     capacity: 4,
-    amenities: ["AC", "WiFi", "Rooftop Access", "Skybar", "Private Elevator"],
+    amenities: translateAmenities(["AC", "WiFi", "Rooftop Access", "Skybar", "Private Elevator"]),
   },
   {
     id: 9,
-    name: "Riverside Cottage",
+    name: "Cottage Ven Sông",
     type: "Standard",
-    description: "Charming cottage with riverside views and nature access",
+    description: "Nhà nghỉ ven sông với tầm nhìn và tiếp cận thiên nhiên",
     price: 189,
     image: "/images/riverside-cottage-hotel.jpg",
     status: "Available",
     capacity: 3,
-    amenities: ["AC", "WiFi", "Porch", "Nature Trail Access"],
+    amenities: translateAmenities(["AC", "WiFi", "Porch", "Nature Trail Access"]),
   },
   {
     id: 10,
-    name: "Grand Ballroom Suite",
+    name: "Suite Grand Ballroom",
     type: "Suite",
-    description: "Sophisticated suite ideal for events and celebrations",
+    description: "Suite tinh tế, lý tưởng cho sự kiện và lễ kỷ niệm",
     price: 399,
     image: "/images/grand-ballroom-suite.jpg",
     status: "Available",
     capacity: 50,
-    amenities: ["AV Equipment", "Catering", "WiFi", "Multiple Rooms"],
+    amenities: translateAmenities(["AV Equipment", "Catering", "WiFi", "Multiple Rooms"]),
   },
 ]
+
 
 export default function RoomsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -158,11 +220,11 @@ export default function RoomsPage() {
       <Navbar />
 
       {/* Page Header */}
-      <section className="bg-gradient-to-r from-blue-50 to-slate-50 py-12 md:py-16">
+      <section className="bg-gradient-to-r from-blue-50 to-slate-50 py-12 md:py-16 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">Our Rooms</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">Các phòng của chúng tôi</h1>
           <p className="text-lg text-slate-600 max-w-2xl">
-            Discover our collection of elegantly designed rooms and suites, each offering unique comfort and luxury.
+            Khám phá bộ sưu tập các phòng và suite được thiết kế tinh tế, mang lại sự thoải mái và sang trọng.
           </p>
         </div>
       </section>
@@ -177,10 +239,10 @@ export default function RoomsPage() {
                 <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search rooms by name or description..."
+                  placeholder="Tìm kiếm phòng theo tên hoặc mô tả..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
@@ -190,9 +252,9 @@ export default function RoomsPage() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
               >
-                <option value="All">All Types</option>
+                <option value="All">Tất cả loại phòng</option>
                 {roomTypes.map((type) => (
                   <option key={type} value={type}>
                     {type}
@@ -206,31 +268,31 @@ export default function RoomsPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
               >
-                <option value="All">All Status</option>
-                <option value="Available">Available</option>
-                <option value="Booked">Booked</option>
+                <option value="All">Tất cả trạng thái</option>
+                <option value="Available">Còn trống</option>
+                <option value="Booked">Đã đặt</option>
               </select>
             </div>
           </div>
 
           {/* Sort Options */}
           <div className="mt-4 flex flex-wrap items-center gap-4">
-            <span className="text-sm font-semibold text-slate-700">Sort by:</span>
+            <span className="text-sm font-semibold text-slate-700">Sắp xếp theo:</span>
             <div className="flex gap-2 flex-wrap">
               {[
-                { value: "name", label: "Name" },
-                { value: "price-low", label: "Price: Low to High" },
-                { value: "price-high", label: "Price: High to Low" },
+                { value: "name", label: "Tên" },
+                { value: "price-low", label: "Giá: Tăng dần" },
+                { value: "price-high", label: "Giá: Giảm dần" },
               ].map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setSortBy(option.value)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                     sortBy === option.value
-                      ? "bg-blue-600 text-white"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      ? "bg-teal-500 text-white shadow-md"
+                      : "bg-teal-50 text-teal-700 hover:bg-teal-100"
                   }`}
                 >
                   {option.label}
@@ -241,7 +303,7 @@ export default function RoomsPage() {
 
           {/* Results Count */}
           <p className="text-sm text-slate-600 mt-4 text-left">
-            Showing {sortedRooms.length} of {ROOMS_DATA.length} rooms
+            Hiển thị {sortedRooms.length} trên {ROOMS_DATA.length} phòng
           </p>
         </div>
       </section>
@@ -258,8 +320,8 @@ export default function RoomsPage() {
           ) : (
             <div className="text-center py-12">
               <Filter className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">No rooms found</h3>
-              <p className="text-slate-600">Try adjusting your search or filter criteria</p>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">Không tìm thấy phòng nào</h3>
+              <p className="text-slate-600">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc</p>
             </div>
           )}
         </div>

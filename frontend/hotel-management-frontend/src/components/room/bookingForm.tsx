@@ -39,16 +39,16 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required"
-    if (!formData.email.trim()) newErrors.email = "Email is required"
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Invalid email format"
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required"
-    if (!formData.checkInDate) newErrors.checkInDate = "Check-in date is required"
-    if (!formData.checkOutDate) newErrors.checkOutDate = "Check-out date is required"
+    if (!formData.fullName.trim()) newErrors.fullName = "Họ và tên là bắt buộc"
+    if (!formData.email.trim()) newErrors.email = "Email là bắt buộc"
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Định dạng email không hợp lệ"
+    if (!formData.phone.trim()) newErrors.phone = "Số điện thoại là bắt buộc"
+    if (!formData.checkInDate) newErrors.checkInDate = "Ngày nhận phòng là bắt buộc"
+    if (!formData.checkOutDate) newErrors.checkOutDate = "Ngày trả phòng là bắt buộc"
     if (formData.checkOutDate && formData.checkInDate && formData.checkOutDate <= formData.checkInDate) {
-      newErrors.checkOutDate = "Check-out date must be after check-in date"
+      newErrors.checkOutDate = "Ngày trả phòng phải sau ngày nhận phòng"
     }
-    if (formData.numGuests < 1) newErrors.numGuests = "At least 1 guest is required"
+    if (formData.numGuests < 1) newErrors.numGuests = "Ít nhất 1 khách là bắt buộc"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -60,7 +60,7 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
       ...prev,
       [name]: name === "numGuests" ? Number.parseInt(value) : value,
     }))
-    // Clear error for this field when user starts typing
+    // Xóa lỗi của trường khi người dùng bắt đầu nhập
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev }
@@ -77,7 +77,7 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
     }
   }
 
-  // Calculate number of nights
+  // Tính số đêm
   const calculateNights = () => {
     if (!formData.checkInDate || !formData.checkOutDate) return 0
     const checkIn = new Date(formData.checkInDate)
@@ -90,19 +90,19 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Personal Information */}
+      {/* Thông tin cá nhân */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-slate-900">Personal Information</h3>
+        <h3 className="text-lg font-semibold text-slate-900">Thông tin cá nhân</h3>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Họ và tên</label>
           <input
             type="text"
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
-            placeholder="John Doe"
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+            placeholder="Nguyễn Văn A"
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
               errors.fullName ? "border-red-500" : "border-slate-300"
             }`}
           />
@@ -121,8 +121,8 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="john@example.com"
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+            placeholder="email@example.com"
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
               errors.email ? "border-red-500" : "border-slate-300"
             }`}
           />
@@ -135,14 +135,14 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Số điện thoại</label>
           <input
             type="tel"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="+1 (555) 123-4567"
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+            placeholder="+84 912 345 678"
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
               errors.phone ? "border-red-500" : "border-slate-300"
             }`}
           />
@@ -155,19 +155,19 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
         </div>
       </div>
 
-      {/* Reservation Details */}
+      {/* Chi tiết đặt phòng */}
       <div className="space-y-4 pt-6 border-t border-slate-200">
-        <h3 className="text-lg font-semibold text-slate-900">Reservation Details</h3>
+        <h3 className="text-lg font-semibold text-slate-900">Chi tiết đặt phòng</h3>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Check-in Date</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Ngày nhận phòng</label>
             <input
               type="date"
               name="checkInDate"
               value={formData.checkInDate}
               onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                 errors.checkInDate ? "border-red-500" : "border-slate-300"
               }`}
             />
@@ -180,13 +180,13 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Check-out Date</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Ngày trả phòng</label>
             <input
               type="date"
               name="checkOutDate"
               value={formData.checkOutDate}
               onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                 errors.checkOutDate ? "border-red-500" : "border-slate-300"
               }`}
             />
@@ -200,18 +200,18 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Number of Guests</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Số lượng khách</label>
           <select
             name="numGuests"
             value={formData.numGuests}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
               errors.numGuests ? "border-red-500" : "border-slate-300"
             }`}
           >
             {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
               <option key={num} value={num}>
-                {num} Guest{num > 1 ? "s" : ""}
+                {num} khách{num > 1 ? "s" : ""}
               </option>
             ))}
           </select>
@@ -224,46 +224,47 @@ export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading
         </div>
       </div>
 
-      {/* Special Requests */}
+      {/* Yêu cầu đặc biệt */}
       <div className="space-y-4 pt-6 border-t border-slate-200">
-        <h3 className="text-lg font-semibold text-slate-900">Special Requests</h3>
+        <h3 className="text-lg font-semibold text-slate-900">Yêu cầu đặc biệt</h3>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Additional Notes</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Ghi chú thêm</label>
           <textarea
             name="specialRequests"
             value={formData.specialRequests}
             onChange={handleChange}
-            placeholder="Any special requests or requirements? (Optional)"
+            placeholder="Có yêu cầu đặc biệt hoặc lưu ý gì không? (Tùy chọn)"
             rows={4}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
           />
         </div>
       </div>
 
-      {/* Price Breakdown */}
+      {/* Tóm tắt giá */}
       {nights > 0 && (
         <div className="pt-6 border-t border-slate-200 bg-slate-50 p-4 rounded-lg space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-slate-600">
-              {nights} night{nights !== 1 ? "s" : ""} × ${pricePerNight}/night
+              {nights} đêm × ${pricePerNight}/đêm
             </span>
             <span className="font-semibold text-slate-900">${nights * pricePerNight}</span>
           </div>
           <div className="border-t border-slate-200 pt-3 flex justify-between">
-            <span className="font-semibold text-slate-900">Total Price</span>
-            <span className="text-2xl font-bold text-blue-600">${totalPrice}</span>
+            <span className="font-semibold text-slate-900">Tổng tiền</span>
+            <span className="text-2xl font-bold text-teal-600">${totalPrice}</span>
           </div>
         </div>
       )}
 
-      {/* Submit Button */}
+      {/* Nút xác nhận */}
       <Button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold shadow-md hover:brightness-105 h-12 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? "Processing..." : "Confirm Booking"}
+        {isLoading ? "Đang xử lý..." : "Xác nhận đặt phòng"}
       </Button>
+
     </form>
   )
 }

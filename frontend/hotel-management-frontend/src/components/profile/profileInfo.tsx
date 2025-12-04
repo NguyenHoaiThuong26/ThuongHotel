@@ -42,14 +42,14 @@ export default function PersonalInfoSection({
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Personal Information</h2>
+        <h2 className="text-xl font-bold text-gray-900">Thông tin cá nhân</h2>
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
           >
             <Edit2 size={18} />
-            <span>Edit</span>
+            <span>Chỉnh sửa</span>
           </button>
         ) : (
           <div className="flex gap-2">
@@ -58,7 +58,7 @@ export default function PersonalInfoSection({
               className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
             >
               <Save size={18} />
-              <span>Save</span>
+              <span>Lưu</span>
             </button>
             <button
               onClick={() => {
@@ -68,7 +68,7 @@ export default function PersonalInfoSection({
               className="flex items-center gap-2 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors"
             >
               <X size={18} />
-              <span>Cancel</span>
+              <span>Hủy</span>
             </button>
           </div>
         )}
@@ -76,20 +76,20 @@ export default function PersonalInfoSection({
 
       {showSuccess && (
         <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-          Personal information updated successfully!
+          Cập nhật thông tin thành công!
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Họ</label>
           {isEditing ? (
             <input
               type="text"
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           ) : (
             <p className="text-gray-900 font-medium">{formData.firstName}</p>
@@ -97,14 +97,14 @@ export default function PersonalInfoSection({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tên</label>
           {isEditing ? (
             <input
               type="text"
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           ) : (
             <p className="text-gray-900 font-medium">{formData.lastName}</p>
@@ -119,7 +119,7 @@ export default function PersonalInfoSection({
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           ) : (
             <p className="text-gray-900 font-medium">{formData.email}</p>
@@ -127,14 +127,14 @@ export default function PersonalInfoSection({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
           {isEditing ? (
             <input
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           ) : (
             <p className="text-gray-900 font-medium">{formData.phone}</p>
@@ -142,14 +142,14 @@ export default function PersonalInfoSection({
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ</label>
           {isEditing ? (
             <input
               type="text"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           ) : (
             <p className="text-gray-900 font-medium">{formData.address}</p>

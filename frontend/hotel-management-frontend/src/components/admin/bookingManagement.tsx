@@ -64,8 +64,16 @@ export default function BookingManagement() {
 
   const exportCSV = () => {
     const csv = [
-      ["Booking ID", "Guest Name", "Room", "Check-in", "Check-out", "Status", "Total Price"],
-      ...filteredBookings.map((b) => [b.id, b.guestName, b.room, b.checkIn, b.checkOut, b.status, `$${b.totalPrice}`]),
+      ["Mã đặt phòng", "Tên khách", "Phòng", "Ngày nhận", "Ngày trả", "Trạng thái", "Tổng tiền"],
+      ...filteredBookings.map((b) => [
+        b.id,
+        b.guestName,
+        b.room,
+        b.checkIn,
+        b.checkOut,
+        b.status,
+        `$${b.totalPrice}`,
+      ]),
     ]
       .map((row) => row.join(","))
       .join("\n")
@@ -108,54 +116,54 @@ export default function BookingManagement() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-slate-900">Booking Management</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Quản lý đặt phòng</h1>
         <button
           onClick={exportCSV}
           className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
         >
           <Download size={20} />
-          Export CSV
+          Xuất CSV
         </button>
       </div>
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-lg shadow-md">
         <div>
-          <label className="text-sm font-medium text-slate-700">Search</label>
+          <label className="text-sm font-medium text-slate-700">Tìm kiếm</label>
           <input
             type="text"
-            placeholder="Search by ID or guest..."
+            placeholder="Tìm theo mã hoặc tên khách..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Status</label>
+          <label className="text-sm font-medium text-slate-700">Trạng thái</label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="canceled">Canceled</option>
+            <option value="all">Tất cả</option>
+            <option value="pending">Chờ xác nhận</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="canceled">Đã hủy</option>
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Check-in Date</label>
+          <label className="text-sm font-medium text-slate-700">Ngày check-in</label>
           <input
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Results</label>
+          <label className="text-sm font-medium text-slate-700">Kết quả</label>
           <div className="mt-1 px-3 py-2 bg-slate-50 rounded-lg text-slate-700 font-medium">
-            {filteredBookings.length} bookings
+            {filteredBookings.length} lượt đặt
           </div>
         </div>
       </div>
@@ -166,14 +174,14 @@ export default function BookingManagement() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Booking ID</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Guest Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Room</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Mã đặt phòng</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Tên khách</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Phòng</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Check-in</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Check-out</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Total Price</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Actions</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Trạng thái</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Tổng tiền</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -189,10 +197,16 @@ export default function BookingManagement() {
                       className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(booking.status)}`}
                     >
                       {getStatusIcon(booking.status)}
-                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                      {booking.status === "confirmed"
+                        ? "Đã xác nhận"
+                        : booking.status === "pending"
+                        ? "Chờ xác nhận"
+                        : "Đã hủy"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-900">${booking.totalPrice}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                    ${booking.totalPrice}
+                  </td>
                   <td className="px-6 py-4 text-sm space-y-2">
                     {booking.status === "pending" && (
                       <>
@@ -200,13 +214,13 @@ export default function BookingManagement() {
                           onClick={() => updateBookingStatus(booking.id, "confirmed")}
                           className="block w-full bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition"
                         >
-                          Confirm
+                          Xác nhận
                         </button>
                         <button
                           onClick={() => updateBookingStatus(booking.id, "canceled")}
                           className="block w-full bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition"
                         >
-                          Cancel
+                          Hủy
                         </button>
                       </>
                     )}
@@ -215,7 +229,7 @@ export default function BookingManagement() {
                         disabled
                         className="block w-full bg-slate-200 text-slate-500 px-3 py-1 rounded text-xs cursor-not-allowed"
                       >
-                        No actions
+                        Không khả dụng
                       </button>
                     )}
                   </td>
@@ -229,17 +243,17 @@ export default function BookingManagement() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Total Bookings</p>
+          <p className="text-sm text-slate-600">Tổng số lượt đặt</p>
           <p className="text-2xl font-bold text-slate-900 mt-1">{filteredBookings.length}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Total Revenue</p>
+          <p className="text-sm text-slate-600">Tổng doanh thu</p>
           <p className="text-2xl font-bold text-green-600 mt-1">
             ${filteredBookings.reduce((sum, b) => sum + b.totalPrice, 0)}
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Pending Confirmation</p>
+          <p className="text-sm text-slate-600">Chờ xác nhận</p>
           <p className="text-2xl font-bold text-yellow-600 mt-1">
             {filteredBookings.filter((b) => b.status === "pending").length}
           </p>

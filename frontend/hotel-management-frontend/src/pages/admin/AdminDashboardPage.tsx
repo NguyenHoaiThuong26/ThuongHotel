@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import DashboardOverview from "../../components/admin/dashBoardOverview"
+import DashboardOverview from "../../components/admin/dashboardOverview"
 import AdminSidebar from "../../components/admin/adminSidebar"
 import RoomManagement from "../../components/admin/roomManagement"
 import BookingManagement from "../../components/admin/bookingManagement"

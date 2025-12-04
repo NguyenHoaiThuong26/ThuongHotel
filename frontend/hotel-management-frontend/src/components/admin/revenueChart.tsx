@@ -14,7 +14,7 @@ export default function RevenueChart() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-slate-900 mb-4">Revenue Performance</h2>
+      <h2 className="text-xl font-bold text-slate-900 mb-4">Hiệu suất Doanh thu</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -22,8 +22,8 @@ export default function RevenueChart() {
           <YAxis />
           <Tooltip formatter={(value: number | string) => `$${value}`} />
           <Legend />
-          <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} name="Actual Revenue" />
-          <Line type="monotone" dataKey="target" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" name="Target" />
+          <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} name="Doanh thu thực tế" />
+          <Line type="monotone" dataKey="target" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" name="Mục tiêu" />
         </LineChart>
       </ResponsiveContainer>
     </div>
