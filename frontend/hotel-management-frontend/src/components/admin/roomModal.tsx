@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { X } from "lucide-react"
 
@@ -28,7 +27,7 @@ export default function RoomModal({ room, onSave, onClose }: RoomModalProps) {
     price: room?.price || 0,
     status: room?.status || "available",
     amenities: room?.amenities || [],
-  });
+  })
 
   const [newAmenity, setNewAmenity] = useState("")
 
@@ -58,7 +57,9 @@ export default function RoomModal({ room, onSave, onClose }: RoomModalProps) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-bold text-slate-900">{room ? "Edit Room" : "Add New Room"}</h2>
+          <h2 className="text-xl font-bold text-slate-900">
+            {room ? "Chỉnh sửa phòng" : "Thêm phòng mới"}
+          </h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-700">
             <X size={24} />
           </button>
@@ -67,7 +68,7 @@ export default function RoomModal({ room, onSave, onClose }: RoomModalProps) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700">Room Name</label>
+              <label className="block text-sm font-medium text-slate-700">Tên phòng</label>
               <input
                 type="text"
                 value={formData.name}
@@ -77,19 +78,19 @@ export default function RoomModal({ room, onSave, onClose }: RoomModalProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">Type</label>
+              <label className="block text-sm font-medium text-slate-700">Loại</label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option>Suite</option>
-                <option>Room</option>
+                <option>Phòng</option>
                 <option>Deluxe</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">Price ($)</label>
+              <label className="block text-sm font-medium text-slate-700">Giá ($)</label>
               <input
                 type="number"
                 value={formData.price}
@@ -99,27 +100,27 @@ export default function RoomModal({ room, onSave, onClose }: RoomModalProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">Status</label>
+              <label className="block text-sm font-medium text-slate-700">Trạng thái</label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                 className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="available">Available</option>
-                <option value="occupied">Occupied</option>
-                <option value="maintenance">Maintenance</option>
+                <option value="available">Có sẵn</option>
+                <option value="occupied">Đang sử dụng</option>
+                <option value="maintenance">Bảo trì</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Amenities</label>
+            <label className="block text-sm font-medium text-slate-700">Tiện nghi</label>
             <div className="flex gap-2 mt-1">
               <input
                 type="text"
                 value={newAmenity}
                 onChange={(e) => setNewAmenity(e.target.value)}
-                placeholder="Add amenity..."
+                placeholder="Thêm tiện nghi..."
                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
@@ -127,7 +128,7 @@ export default function RoomModal({ room, onSave, onClose }: RoomModalProps) {
                 onClick={addAmenity}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               >
-                Add
+                Thêm
               </button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -154,14 +155,14 @@ export default function RoomModal({ room, onSave, onClose }: RoomModalProps) {
               type="submit"
               className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium"
             >
-              {room ? "Update Room" : "Add Room"}
+              {room ? "Cập nhật phòng" : "Thêm phòng"}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="flex-1 bg-slate-200 text-slate-900 py-2 rounded-lg hover:bg-slate-300 transition font-medium"
             >
-              Cancel
+              Hủy
             </button>
           </div>
         </form>

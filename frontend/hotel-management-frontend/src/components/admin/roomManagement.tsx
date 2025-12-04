@@ -28,7 +28,7 @@ const sampleRooms: Room[] = [
     type: "Room",
     price: 180,
     status: "occupied",
-    amenities: ["WiFi", "Balcony", "Mini Bar"],
+    amenities: ["WiFi", "Ban công", "Mini Bar"],
   },
   {
     id: "R003",
@@ -36,7 +36,7 @@ const sampleRooms: Room[] = [
     type: "Suite",
     price: 220,
     status: "maintenance",
-    amenities: ["WiFi", "Garden View", "Spa"],
+    amenities: ["WiFi", "View vườn", "Spa"],
   },
 ]
 
@@ -92,61 +92,61 @@ export default function RoomManagement() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-slate-900">Room Management</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Quản lý Phòng</h1>
         <button
           onClick={() => {
             setEditingRoom(null)
             setShowModal(true)
           }}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
         >
           <Plus size={20} />
-          Add Room
+          Thêm Phòng
         </button>
       </div>
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-lg shadow-md">
         <div>
-          <label className="text-sm font-medium text-slate-700">Search</label>
+          <label className="text-sm font-medium text-slate-700">Tìm kiếm</label>
           <input
             type="text"
-            placeholder="Search rooms..."
+            placeholder="Tìm kiếm phòng..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Type</label>
+          <label className="text-sm font-medium text-slate-700">Loại</label>
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
-            <option value="all">All Types</option>
+            <option value="all">Tất cả loại</option>
             <option value="Suite">Suite</option>
-            <option value="Room">Room</option>
+            <option value="Room">Phòng</option>
             <option value="Deluxe">Deluxe</option>
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Status</label>
+          <label className="text-sm font-medium text-slate-700">Trạng thái</label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
-            <option value="all">All Status</option>
-            <option value="available">Available</option>
-            <option value="occupied">Occupied</option>
-            <option value="maintenance">Maintenance</option>
+            <option value="all">Tất cả trạng thái</option>
+            <option value="available">Có sẵn</option>
+            <option value="occupied">Đang sử dụng</option>
+            <option value="maintenance">Bảo trì</option>
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Results</label>
+          <label className="text-sm font-medium text-slate-700">Kết quả</label>
           <div className="mt-1 px-3 py-2 bg-slate-50 rounded-lg text-slate-700 font-medium">
-            {filteredRooms.length} rooms
+            {filteredRooms.length} phòng
           </div>
         </div>
       </div>
@@ -157,13 +157,13 @@ export default function RoomManagement() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Room ID</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Type</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Price</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Amenities</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Actions</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Mã phòng</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Tên</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Loại</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Giá</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Trạng thái</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Tiện nghi</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -179,9 +179,9 @@ export default function RoomManagement() {
                       onChange={(e) => handleStatusChange(room.id, e.target.value as any)}
                       className={`px-3 py-1 rounded-lg text-sm font-medium cursor-pointer border-0 ${getStatusColor(room.status)}`}
                     >
-                      <option value="available">Available</option>
-                      <option value="occupied">Occupied</option>
-                      <option value="maintenance">Maintenance</option>
+                      <option value="available">Có sẵn</option>
+                      <option value="occupied">Đang sử dụng</option>
+                      <option value="maintenance">Bảo trì</option>
                     </select>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-700">

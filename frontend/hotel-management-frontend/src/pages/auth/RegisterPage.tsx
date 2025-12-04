@@ -10,6 +10,7 @@ import {
   Calendar,
   Loader2,
 } from "lucide-react"
+import { Link } from "react-router-dom"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -28,17 +29,17 @@ export default function RegisterPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.username.trim()) newErrors.username = "Username is required"
-    if (!formData.email.trim()) newErrors.email = "Email is required"
+    if (!formData.username.trim()) newErrors.username = "Tên đăng nhập là bắt buộc"
+    if (!formData.email.trim()) newErrors.email = "Email là bắt buộc"
     else if (!/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Invalid email format"
-    if (!formData.password.trim()) newErrors.password = "Password is required"
+      newErrors.email = "Email không hợp lệ"
+    if (!formData.password.trim()) newErrors.password = "Mật khẩu là bắt buộc"
     else if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters"
+      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự"
     if (formData.confirmPassword !== formData.password)
-      newErrors.confirmPassword = "Passwords do not match"
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required"
-    if (!formData.dateOfBirth.trim()) newErrors.dateOfBirth = "Date of birth is required"
+      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp"
+    if (!formData.phone.trim()) newErrors.phone = "Số điện thoại là bắt buộc"
+    if (!formData.dateOfBirth.trim()) newErrors.dateOfBirth = "Ngày sinh là bắt buộc"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -58,13 +59,13 @@ export default function RegisterPage() {
 
       if (response.ok) {
         const data = await response.json()
-        console.log("Registration successful:", data)
+        console.log("Đăng ký thành công:", data)
       } else {
-        setErrors({ email: "Registration failed. Please try again." })
+        setErrors({ email: "Đăng ký thất bại. Vui lòng thử lại." })
       }
     } catch (error) {
-      console.error("Register error:", error)
-      setErrors({ email: "An error occurred. Please try again." })
+      console.error("Lỗi đăng ký:", error)
+      setErrors({ email: "Đã xảy ra lỗi. Vui lòng thử lại." })
     } finally {
       setIsLoading(false)
     }
@@ -72,8 +73,8 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900">
+      {/* Bên trái */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-teal-400 to-blue-500">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-40"
           style={{
@@ -81,31 +82,31 @@ export default function RegisterPage() {
               "url(/placeholder.svg?height=1080&width=960&query=luxury%20hotel%20interior)",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-slate-900/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-400/80 to-blue-500/60" />
         <div className="relative z-10 flex flex-col justify-center items-center w-full px-8 text-white">
           <div className="text-center max-w-md">
-            <Building2 className="w-16 h-16 mx-auto mb-6 text-blue-300" />
-            <h1 className="text-4xl font-bold mb-4">Join Luxury Hotels</h1>
-            <p className="text-blue-100 text-lg leading-relaxed">
-              Create your account to start managing reservations and enjoy premium services.
+            <Building2 className="w-16 h-16 mx-auto mb-6 text-white" />
+            <h1 className="text-4xl font-bold mb-4">Tham gia Thuong Hotel</h1>
+            <p className="text-white text-lg leading-relaxed">
+              Tạo tài khoản để quản lý đặt phòng và tận hưởng các dịch vụ cao cấp.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Right Side */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-white">
+      {/* Bên phải */}
+      <div className="w-full lg:w-1/2 flex items-start justify-center px-4 sm:px-6 lg:px-8 pt-12 bg-white">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
+          {/* Logo trên mobile */}
           <div className="lg:hidden flex justify-center mb-8">
-            <Building2 className="w-12 h-12 text-blue-600" />
+            <Building2 className="w-12 h-12 text-teal-600" />
           </div>
 
-          {/* Form Header */}
+          {/* Tiêu đề form */}
           <div className="mb-8 text-left">
-            <h2 className="text-3xl font-bold text-slate-900">Create Account</h2>
+            <h2 className="text-3xl font-bold text-slate-900">Tạo tài khoản</h2>
             <p className="text-slate-600 mt-2">
-              Fill in your details to get started
+              Điền thông tin để bắt đầu
             </p>
           </div>
 
@@ -114,7 +115,7 @@ export default function RegisterPage() {
             {/* Username */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2 text-left">
-                Username
+                Tên đăng nhập
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -125,7 +126,7 @@ export default function RegisterPage() {
                     setFormData({ ...formData, username: e.target.value })
                   }
                   placeholder="john_doe"
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                     errors.username
                       ? "border-red-500 bg-red-50"
                       : "border-slate-300 bg-slate-50 hover:border-slate-400"
@@ -151,7 +152,7 @@ export default function RegisterPage() {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="your@email.com"
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                     errors.email
                       ? "border-red-500 bg-red-50"
                       : "border-slate-300 bg-slate-50 hover:border-slate-400"
@@ -163,10 +164,10 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Password */}
+            {/* Mật khẩu */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2 text-left">
-                Password
+                Mật khẩu
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -177,7 +178,7 @@ export default function RegisterPage() {
                     setFormData({ ...formData, password: e.target.value })
                   }
                   placeholder="••••••••"
-                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                     errors.password
                       ? "border-red-500 bg-red-50"
                       : "border-slate-300 bg-slate-50 hover:border-slate-400"
@@ -196,10 +197,10 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Confirm Password */}
+            {/* Xác nhận mật khẩu */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2 text-left">
-                Confirm Password
+                Xác nhận mật khẩu
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -210,7 +211,7 @@ export default function RegisterPage() {
                     setFormData({ ...formData, confirmPassword: e.target.value })
                   }
                   placeholder="••••••••"
-                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                     errors.confirmPassword
                       ? "border-red-500 bg-red-50"
                       : "border-slate-300 bg-slate-50 hover:border-slate-400"
@@ -229,10 +230,10 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Phone */}
+            {/* Số điện thoại */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2 text-left">
-                Phone
+                Số điện thoại
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -243,7 +244,7 @@ export default function RegisterPage() {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder="0123456789"
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                     errors.phone
                       ? "border-red-500 bg-red-50"
                       : "border-slate-300 bg-slate-50 hover:border-slate-400"
@@ -255,10 +256,10 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Date of Birth */}
+            {/* Ngày sinh */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2 text-left">
-                Date of Birth
+                Ngày sinh
               </label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -268,7 +269,7 @@ export default function RegisterPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, dateOfBirth: e.target.value })
                   }
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
                     errors.dateOfBirth
                       ? "border-red-500 bg-red-50"
                       : "border-slate-300 bg-slate-50 hover:border-slate-400"
@@ -280,39 +281,39 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Register Button */}
+            {/* Nút đăng ký */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:brightness-105 disabled:bg-teal-400 text-white font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Registering...
+                  Đang đăng ký...
                 </>
               ) : (
-                "Register"
+                "Đăng ký"
               )}
             </button>
           </form>
 
-          {/* Login Redirect */}
+          {/* Chuyển sang đăng nhập */}
           <div className="mt-8 text-center">
             <p className="text-slate-600">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="text-blue-600 hover:text-blue-700 font-semibold transition"
+              Đã có tài khoản?{" "}
+              <Link
+                to="/login"
+                className="text-teal-600 hover:text-teal-700 font-semibold transition"
               >
-                Login here
-              </a>
+                Đăng nhập tại đây
+              </Link>
             </p>
           </div>
 
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
-            <p>© 2025 Luxury Hotels. All rights reserved.</p>
+            <p>© 2025 Thuong Hotel. Bảo lưu mọi quyền.</p>
           </div>
         </div>
       </div>

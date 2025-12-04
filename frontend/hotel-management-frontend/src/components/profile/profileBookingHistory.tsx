@@ -16,6 +16,7 @@ interface BookingHistorySectionProps {
   bookings?: Booking[]
 }
 
+// Dữ liệu đặt phòng mẫu
 const mockBookings: Booking[] = [
   {
     id: "BK001",
@@ -46,14 +47,15 @@ const mockBookings: Booking[] = [
 export default function BookingHistorySection({ bookings = mockBookings }: BookingHistorySectionProps) {
   const [cancelingId, setCancelingId] = useState<string | null>(null)
 
+  // Lấy màu trạng thái
   const getStatusColor = (status: string) => {
     switch (status) {
       case "confirmed":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800" // Đã xác nhận
       case "pending":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800" // Chờ xử lý
       case "canceled":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800" // Đã hủy
       default:
         return "bg-gray-100 text-gray-800"
     }
@@ -66,12 +68,12 @@ export default function BookingHistorySection({ bookings = mockBookings }: Booki
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center gap-2 mb-6">
-        <Calendar size={24} className="text-blue-600" />
-        <h2 className="text-xl font-bold text-gray-900">Booking History</h2>
+        <Calendar size={24} className="text-teal-600" />
+        <h2 className="text-xl font-bold text-gray-900">Lịch sử đặt phòng</h2>
       </div>
 
       {bookings.length === 0 ? (
-        <p className="text-gray-600 text-center py-8">No bookings found</p>
+        <p className="text-gray-600 text-center py-8">Không tìm thấy đặt phòng nào</p>
       ) : (
         <div className="space-y-4">
           {bookings.map((booking) => (
@@ -83,51 +85,58 @@ export default function BookingHistorySection({ bookings = mockBookings }: Booki
                     {new Date(booking.checkInDate).toLocaleDateString()} -{" "}
                     {new Date(booking.checkOutDate).toLocaleDateString()}
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">Booking ID: {booking.id}</p>
+                  <p className="text-sm text-gray-600 mt-1">Mã đặt phòng: {booking.id}</p>
                 </div>
 
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <p className="text-lg font-bold text-gray-900">${booking.price}</p>
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-1 ${getStatusColor(booking.status)}`}
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-1 ${getStatusColor(
+                        booking.status
+                      )}`}
                     >
-                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                      {booking.status === "confirmed"
+                        ? "Đã xác nhận"
+                        : booking.status === "pending"
+                        ? "Chờ xử lý"
+                        : "Đã hủy"}
                     </span>
                   </div>
 
                   <div className="flex gap-2">
                     <button
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="View Details"
+                      className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                      title="Xem chi tiết"
                     >
                       <Eye size={18} />
                     </button>
+
                     {booking.status !== "canceled" && (
                       <div className="relative">
                         <button
                           onClick={() => setCancelingId(cancelingId === booking.id ? null : booking.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Cancel Booking"
+                          title="Hủy đặt phòng"
                         >
                           <X size={18} />
                         </button>
 
                         {cancelingId === booking.id && (
                           <div className="absolute right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-10 p-3 w-48">
-                            <p className="text-sm font-medium text-gray-900 mb-3">Cancel this booking?</p>
+                            <p className="text-sm font-medium text-gray-900 mb-3">Bạn muốn hủy đặt phòng này?</p>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleCancelBooking(booking.id)}
                                 className="flex-1 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium"
                               >
-                                Yes, Cancel
+                                Hủy
                               </button>
                               <button
                                 onClick={() => setCancelingId(null)}
                                 className="flex-1 px-3 py-1 bg-gray-200 text-gray-900 rounded hover:bg-gray-300 text-sm font-medium"
                               >
-                                Keep
+                                Giữ lại
                               </button>
                             </div>
                           </div>

@@ -20,7 +20,7 @@ interface BookingSummaryProps {
 export default function BookingSummary({ room }: BookingSummaryProps) {
   return (
     <div className="bg-slate-50 rounded-lg p-6 sticky top-24 space-y-6">
-      {/* Room Image */}
+      {/* Ảnh phòng */}
       <div className="aspect-video rounded-lg overflow-hidden bg-slate-200">
         <img
           src={room.image || "/placeholder.svg?height=200&width=300"}
@@ -29,13 +29,13 @@ export default function BookingSummary({ room }: BookingSummaryProps) {
         />
       </div>
 
-      {/* Room Name and Type */}
+      {/* Tên và loại phòng */}
       <div>
         <h3 className="text-2xl font-serif font-bold text-slate-900">{room.name}</h3>
         <p className="text-slate-600 mt-1">{room.type}</p>
       </div>
 
-      {/* Rating */}
+      {/* Đánh giá */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, i) => (
@@ -48,35 +48,39 @@ export default function BookingSummary({ room }: BookingSummaryProps) {
           ))}
         </div>
         <span className="font-semibold text-slate-900">{room.rating}</span>
-        <span className="text-sm text-slate-600">({room.reviews} reviews)</span>
+        <span className="text-sm text-slate-600">({room.reviews} đánh giá)</span>
       </div>
 
-      {/* Price */}
+      {/* Giá */}
       <div className="border-t border-slate-200 pt-4">
-        <p className="text-sm text-slate-600 mb-1">Price per Night</p>
-        <p className="text-3xl font-bold text-blue-600">${room.price}</p>
+        <p className="text-sm text-slate-600 mb-1">Giá mỗi đêm</p>
+        <p className="text-3xl font-bold text-teal-600">${room.price}</p>
       </div>
 
-      {/* Amenities */}
+      {/* Tiện ích chính */}
       <div className="border-t border-slate-200 pt-4">
-        <h4 className="font-semibold text-slate-900 mb-3">Key Amenities</h4>
+        <h4 className="font-semibold text-slate-900 mb-3">Tiện ích chính</h4>
         <div className="space-y-2">
           {room.amenities.slice(0, 5).map((amenity, idx) => (
             <div key={idx} className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-teal-600 rounded-full"></div>
               <span className="text-sm text-slate-700">{amenity}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Back Button */}
+      {/* Nút quay lại */}
       <Link to={`/room/${room.id}`}>
-        <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-100 bg-white h-10 mt-4">
+        <Button
+          variant="outline"
+          className="w-full h-10 mt-4 border-teal-500 text-teal-500 hover:bg-teal-50 bg-transparent"
+        >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Details
+          Quay lại chi tiết
         </Button>
       </Link>
+
     </div>
   )
 }

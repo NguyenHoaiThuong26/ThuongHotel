@@ -4,16 +4,16 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recha
 
 export default function OccupancyChart() {
   const data = [
-    { name: "Occupied", value: 75 },
-    { name: "Available", value: 45 },
-    { name: "Maintenance", value: 0 },
+    { name: "Đã sử dụng", value: 75 },
+    { name: "Còn trống", value: 45 },
+    { name: "Bảo trì", value: 0 },
   ]
 
   const COLORS = ["#3b82f6", "#10b981", "#ef4444"]
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-slate-900 mb-4">Room Occupancy Rate</h2>
+      <h2 className="text-xl font-bold text-slate-900 mb-4">Tỷ lệ sử dụng phòng</h2>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie

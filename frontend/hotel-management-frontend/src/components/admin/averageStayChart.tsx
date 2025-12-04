@@ -14,19 +14,23 @@ export default function AverageStayChart() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-slate-900 mb-4">Average Stay Duration vs Revenue</h2>
+      <h2 className="text-xl font-bold text-slate-900 mb-4">
+        Thời gian lưu trú trung bình và doanh thu
+      </h2>
       <ResponsiveContainer width="100%" height={300}>
         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="avgStay" name="Avg Stay (days)" />
-          <YAxis type="number" dataKey="revenue" name="Revenue ($)" />
+          <XAxis type="number" dataKey="avgStay" name="Thời gian lưu trú (ngày)" />
+          <YAxis type="number" dataKey="revenue" name="Doanh thu ($)" />
           <Tooltip
             cursor={{ strokeDasharray: "3 3" }}
             formatter={(value) =>
-              typeof value === "number" ? (value > 100 ? `$${value}` : `${value.toFixed(1)} days`) : value
+              typeof value === "number"
+                ? (value > 100 ? `$${value}` : `${value.toFixed(1)} ngày`)
+                : value
             }
           />
-          <Scatter name="Performance" data={data} fill="#8b5cf6" />
+          <Scatter name="Hiệu suất" data={data} fill="#8b5cf6" />
         </ScatterChart>
       </ResponsiveContainer>
     </div>

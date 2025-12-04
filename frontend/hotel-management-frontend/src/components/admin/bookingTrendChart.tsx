@@ -14,7 +14,7 @@ export default function BookingTrendsChart() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-slate-900 mb-4">Booking Trends</h2>
+      <h2 className="text-xl font-bold text-slate-900 mb-4">Xu hướng đặt phòng</h2>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -22,9 +22,9 @@ export default function BookingTrendsChart() {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Area type="monotone" dataKey="confirmed" stackId="1" stroke="#10b981" fill="#10b981" name="Confirmed" />
-          <Area type="monotone" dataKey="pending" stackId="1" stroke="#f59e0b" fill="#f59e0b" name="Pending" />
-          <Area type="monotone" dataKey="canceled" stackId="1" stroke="#ef4444" fill="#ef4444" name="Canceled" />
+          <Area type="monotone" dataKey="confirmed" stackId="1" stroke="#10b981" fill="#10b981" name="Đã xác nhận" />
+          <Area type="monotone" dataKey="pending" stackId="1" stroke="#f59e0b" fill="#f59e0b" name="Chờ xử lý" />
+          <Area type="monotone" dataKey="canceled" stackId="1" stroke="#ef4444" fill="#ef4444" name="Đã hủy" />
         </AreaChart>
       </ResponsiveContainer>
     </div>

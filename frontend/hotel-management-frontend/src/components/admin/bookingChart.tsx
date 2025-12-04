@@ -14,7 +14,9 @@ export default function BookingChart() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-slate-900 mb-4">Booking Trends</h2>
+      <h2 className="text-xl font-bold text-slate-900 mb-4">
+        Xu hướng đặt phòng
+      </h2>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -22,8 +24,8 @@ export default function BookingChart() {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="bookings" fill="#3b82f6" name="Bookings" />
-          <Bar dataKey="revenue" fill="#10b981" name="Revenue ($)" />
+          <Bar dataKey="bookings" fill="#3b82f6" name="Số lượt đặt phòng" />
+          <Bar dataKey="revenue" fill="#10b981" name="Doanh thu ($)" />
         </BarChart>
       </ResponsiveContainer>
     </div>

@@ -106,60 +106,60 @@ export default function UserManagement() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-slate-900">User Management</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Quản lý người dùng</h1>
         <button
           onClick={() => {
             setEditingUser(null)
             setShowModal(true)
           }}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
         >
           <Plus size={20} />
-          Add User
+          Thêm người dùng
         </button>
       </div>
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-lg shadow-md">
         <div>
-          <label className="text-sm font-medium text-slate-700">Search</label>
+          <label className="text-sm font-medium text-slate-700">Tìm kiếm</label>
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder="Tìm theo tên hoặc email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Role</label>
+          <label className="text-sm font-medium text-slate-700">Vai trò</label>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
-            <option value="all">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="receptionist">Receptionist</option>
-            <option value="customer">Customer</option>
+            <option value="all">Tất cả vai trò</option>
+            <option value="admin">Quản trị viên</option>
+            <option value="receptionist">Lễ tân</option>
+            <option value="customer">Khách hàng</option>
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Status</label>
+          <label className="text-sm font-medium text-slate-700">Trạng thái</label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            <option value="all">Tất cả trạng thái</option>
+            <option value="active">Hoạt động</option>
+            <option value="inactive">Không hoạt động</option>
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700">Results</label>
+          <label className="text-sm font-medium text-slate-700">Kết quả</label>
           <div className="mt-1 px-3 py-2 bg-slate-50 rounded-lg text-slate-700 font-medium">
-            {filteredUsers.length} users
+            {filteredUsers.length} người dùng
           </div>
         </div>
       </div>
@@ -170,13 +170,13 @@ export default function UserManagement() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">User ID</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Name</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">ID người dùng</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Tên</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Email</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Role</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Join Date</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Actions</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Vai trò</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Trạng thái</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Ngày tham gia</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -190,7 +190,7 @@ export default function UserManagement() {
                       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(user.role)}`}
                     >
                       {user.role === "admin" && <Shield size={14} />}
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                      {user.role === "admin" ? "Quản trị viên" : user.role === "receptionist" ? "Lễ tân" : "Khách hàng"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -198,7 +198,7 @@ export default function UserManagement() {
                       onClick={() => toggleUserStatus(user.id)}
                       className={`px-3 py-1 rounded-lg text-sm font-medium cursor-pointer border-0 transition ${getStatusColor(user.status)}`}
                     >
-                      {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                      {user.status === "active" ? "Hoạt động" : "Không hoạt động"}
                     </button>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-700">{user.joinDate}</td>
@@ -231,17 +231,17 @@ export default function UserManagement() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Total Users</p>
+          <p className="text-sm text-slate-600">Tổng số người dùng</p>
           <p className="text-2xl font-bold text-slate-900 mt-1">{filteredUsers.length}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Active Users</p>
+          <p className="text-sm text-slate-600">Người dùng hoạt động</p>
           <p className="text-2xl font-bold text-green-600 mt-1">
             {filteredUsers.filter((u) => u.status === "active").length}
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Administrators</p>
+          <p className="text-sm text-slate-600">Quản trị viên</p>
           <p className="text-2xl font-bold text-red-600 mt-1">
             {filteredUsers.filter((u) => u.role === "admin").length}
           </p>
