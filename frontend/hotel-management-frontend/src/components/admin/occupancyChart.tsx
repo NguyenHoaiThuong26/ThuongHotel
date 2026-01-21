@@ -2,12 +2,11 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
 
-export default function OccupancyChart() {
-  const data = [
-    { name: "Đã sử dụng", value: 75 },
-    { name: "Còn trống", value: 45 },
-    { name: "Bảo trì", value: 0 },
-  ]
+interface ChartProps {
+  data: any[];
+}
+
+export default function OccupancyChart({ data }: ChartProps) {
 
   const COLORS = ["#3b82f6", "#10b981", "#ef4444"]
 
@@ -26,7 +25,7 @@ export default function OccupancyChart() {
             fill="#8884d8"
             dataKey="value"
           >
-            {data.map((entry, index) => (
+            {data.map((_, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>

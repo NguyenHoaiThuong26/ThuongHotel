@@ -6,23 +6,32 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public enum ErrorCode {
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
-    INVALID_KEY(1001, "Uncategorized error", HttpStatus.BAD_REQUEST),
-    USER_EXISTED(1002, "User existed", HttpStatus.BAD_REQUEST),
-    USERNAME_INVALID(1003, "Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
-    INVALID_PASSWORD(1004, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
-    USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
-    UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
-    ROLE_NOT_FOUND(1008, "Role not found", HttpStatus.NOT_FOUND),
-    PERMISSION_NOT_FOUND(1009, "Permission not found", HttpStatus.NOT_FOUND),
-    ROOM_NOT_FOUND(1010, "Room not found", HttpStatus.NOT_FOUND),
-    ROOM_ALREADY_EXISTS(1011, "Room already exists", HttpStatus.BAD_REQUEST),
-    ROOM_TYPE_NOT_FOUND(1012, "Room type not found", HttpStatus.NOT_FOUND),
-    INVALID_ROOM_STATUS(1013, "Invalid room status", HttpStatus.BAD_REQUEST),
-    ROOM_DELETE_FAILED(1014, "Cannot delete room due to related bookings or images", HttpStatus.CONFLICT)
-    ;
-
+    UNCATEGORIZED_EXCEPTION(9999, "Lỗi hệ thống chưa được phân loại", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_KEY(1001, "Lỗi xác thực", HttpStatus.BAD_REQUEST),
+    USER_EXISTED(1002, "Người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
+    USERNAME_INVALID(1003, "Tên đăng nhập phải có ít nhất 3 ký tự", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD(1004, "Mật khẩu phải có ít nhất 8 ký tự", HttpStatus.BAD_REQUEST),
+    USER_NOT_EXISTED(1005, "Người dùng không tồn tại", HttpStatus.NOT_FOUND),
+    UNAUTHENTICATED(1006, "Vui lòng đăng nhập", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(1007, "Bạn không có quyền truy cập", HttpStatus.FORBIDDEN),
+    ROLE_NOT_FOUND(1008, "Không tìm thấy vai trò", HttpStatus.NOT_FOUND),
+    PERMISSION_NOT_FOUND(1009, "Không tìm thấy quyền hạn", HttpStatus.NOT_FOUND),
+    ROOM_NOT_FOUND(1010, "Không tìm thấy phòng", HttpStatus.NOT_FOUND),
+    ROOM_ALREADY_EXISTS(1011, "Phòng đã tồn tại", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_NOT_FOUND(1012, "Không tìm thấy loại phòng", HttpStatus.NOT_FOUND),
+    INVALID_ROOM_STATUS(1013, "Trạng thái phòng không hợp lệ", HttpStatus.BAD_REQUEST),
+    ROOM_DELETE_FAILED(1014, "Không thể xóa phòng vì có dữ liệu đặt phòng hoặc hình ảnh liên quan",
+            HttpStatus.CONFLICT),
+    ROOM_TYPE_EXISTED(1015, "Loại phòng đã tồn tại", HttpStatus.BAD_REQUEST),
+    ROOM_ID_INVALID(1016, "ID phòng không hợp lệ", HttpStatus.BAD_REQUEST),
+    CHECK_IN_INVALID(1017, "Ngày nhận phòng không hợp lệ", HttpStatus.BAD_REQUEST),
+    CHECK_IN_FUTURE(1018, "Ngày nhận phòng phải trong tương lai", HttpStatus.BAD_REQUEST),
+    CHECK_OUT_INVALID(1019, "Ngày trả phòng không hợp lệ", HttpStatus.BAD_REQUEST),
+    CHECK_OUT_FUTURE(1020, "Ngày trả phòng phải trong tương lai", HttpStatus.BAD_REQUEST),
+    INVALID_NUM_ADULTS(1021, "Số lượng người lớn không hợp lệ", HttpStatus.BAD_REQUEST),
+    INVALID_NUM_CHILDREN(1022, "Số lượng trẻ em không hợp lệ", HttpStatus.BAD_REQUEST),
+    USER_NOT_VERIFIED(1023, "Tài khoản chưa được xác thực. Vui lòng kiểm tra email của bạn.", HttpStatus.UNAUTHORIZED),
+    INVALID_OLD_PASSWORD(1024, "Mật khẩu cũ không chính xác", HttpStatus.BAD_REQUEST);
 
     ;
 

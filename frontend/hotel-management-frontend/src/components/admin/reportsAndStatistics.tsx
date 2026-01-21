@@ -4,7 +4,6 @@ import { Download } from "lucide-react"
 import RevenueChart from "./revenueChart"
 import BookingTrendsChart from "./bookingTrendChart"
 import OccupancyChart from "./occupancyChart"
-import AverageStayChart from "./averageStayChart"
 import StarChart from "./starChart"
 
 export default function ReportsStatistics() {
@@ -27,7 +26,7 @@ export default function ReportsStatistics() {
     },
     {
       label: "Doanh thu trung bình mỗi phòng",
-      value: "$187.50",
+      value: "4,600,000 ₫",
       trend: "+12% so với tháng trước",
       color: "text-purple-600",
     },
@@ -37,6 +36,21 @@ export default function ReportsStatistics() {
       trend: "+0.2 điểm so với tháng trước",
       color: "text-yellow-600",
     },
+  ]
+
+  const revenueData = [
+    { month: "Jan", revenue: 500000000, target: 450000000 },
+    { month: "Feb", revenue: 600000000, target: 500000000 },
+    { month: "Mar", revenue: 750000000, target: 600000000 },
+    { month: "Apr", revenue: 450000000, target: 500000000 },
+    { month: "May", revenue: 800000000, target: 700000000 },
+    { month: "Jun", revenue: 900000000, target: 800000000 },
+  ]
+
+  const occupancyData = [
+    { name: "Đã thuê", value: 75 },
+    { name: "Còn trống", value: 20 },
+    { name: "Bảo trì", value: 5 },
   ]
 
   return (
@@ -69,12 +83,12 @@ export default function ReportsStatistics() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <RevenueChart />
+        <RevenueChart data={revenueData} />
         <BookingTrendsChart />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <OccupancyChart />
+        <OccupancyChart data={occupancyData} />
         <StarChart />
       </div>
 
@@ -95,12 +109,12 @@ export default function ReportsStatistics() {
             </thead>
             <tbody>
               {[
-                { month: "January", bookings: 145, revenue: "$28,500", occupancy: "72%", avgStay: "3.1", score: "4.6" },
-                { month: "February", bookings: 156, revenue: "$31,200", occupancy: "75%", avgStay: "3.2", score: "4.7" },
-                { month: "March", bookings: 178, revenue: "$35,600", occupancy: "80%", avgStay: "3.3", score: "4.8" },
-                { month: "April", bookings: 192, revenue: "$38,400", occupancy: "82%", avgStay: "3.4", score: "4.9" },
-                { month: "May", bookings: 210, revenue: "$42,000", occupancy: "85%", avgStay: "3.5", score: "4.9" },
-                { month: "June", bookings: 225, revenue: "$45,000", occupancy: "88%", avgStay: "3.6", score: "5.0" },
+                { month: "January", bookings: 145, revenue: "700,000,000 ₫", occupancy: "72%", avgStay: "3.1", score: "4.6" },
+                { month: "February", bookings: 156, revenue: "765,000,000 ₫", occupancy: "75%", avgStay: "3.2", score: "4.7" },
+                { month: "March", bookings: 178, revenue: "870,000,000 ₫", occupancy: "80%", avgStay: "3.3", score: "4.8" },
+                { month: "April", bookings: 192, revenue: "940,000,000 ₫", occupancy: "82%", avgStay: "3.4", score: "4.9" },
+                { month: "May", bookings: 210, revenue: "1,030,000,000 ₫", occupancy: "85%", avgStay: "3.5", score: "4.9" },
+                { month: "June", bookings: 225, revenue: "1,100,000,000 ₫", occupancy: "88%", avgStay: "3.6", score: "5.0" },
               ].map((row, index) => (
                 <tr key={index} className="border-b border-slate-200 hover:bg-slate-50 transition">
                   <td className="px-4 py-3 font-medium text-slate-900">{row.month}</td>

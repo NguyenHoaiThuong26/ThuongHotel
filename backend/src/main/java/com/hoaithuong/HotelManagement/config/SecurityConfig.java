@@ -23,52 +23,61 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/users",
-            "/auth/token", "/auth/introspect"
-    };
+        private final String[] PUBLIC_ENDPOINTS = { "/users",
+                        "/auth/token", "/auth/introspect"
+        };
 
-    @Value("${jwt.signerKey}")
-    private String signerKey;
+        private final String[] PUBLIC_GET_ENDPOINTS = {
+                        "/rooms", "/rooms/**", "/room-types", "/uploads/**",
+                        "/auth/verify", "/reviews/**"
+        };
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated());
+        @Value("${jwt.signerKey}")
+        private String signerKey;
 
-        httpSecurity.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder())
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-        );
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        @org.springframework.beans.factory.annotation.Autowired
+        private OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
 
-        return httpSecurity.build();
-    }
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+                httpSecurity
+                                .authorizeHttpRequests(request -> request
+                                                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                                                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+                                                .anyRequest().authenticated());
 
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+                httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
+                                .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
 
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+                httpSecurity.oauth2Login(oauth2 -> oauth2
+                                .successHandler(oauth2LoginSuccessHandler));
 
-        return jwtAuthenticationConverter;
-    }
+                httpSecurity.csrf(AbstractHttpConfigurer::disable);
+                httpSecurity.cors(org.springframework.security.config.Customizer.withDefaults());
 
-    @Bean
-    JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
+                return httpSecurity.build();
+        }
 
-    @Bean
-    PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(10);
-    }
+        @Bean
+        JwtAuthenticationConverter jwtAuthenticationConverter() {
+                JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+                jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+
+                JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+                jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+                return jwtAuthenticationConverter;
+        }
+
+        @Bean
+        JwtDecoder jwtDecoder() {
+                SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+                return NimbusJwtDecoder
+                                .withSecretKey(secretKeySpec)
+                                .macAlgorithm(MacAlgorithm.HS512)
+                                .build();
+        }
+
 }

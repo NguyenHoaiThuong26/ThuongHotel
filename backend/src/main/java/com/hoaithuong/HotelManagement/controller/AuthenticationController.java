@@ -25,7 +25,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/token")
-    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
@@ -46,6 +46,22 @@ public class AuthenticationController {
             throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/social-login")
+    ApiResponse<AuthenticationResponse> socialLogin(@RequestBody SocialLoginRequest request) {
+        var result = authenticationService.socialLogin(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/verify")
+    ApiResponse<Boolean> verifyAccount(@org.springframework.web.bind.annotation.RequestParam String code) {
+        boolean result = authenticationService.verifyUser(code);
+        return ApiResponse.<Boolean>builder()
+                .result(result)
                 .build();
     }
 }

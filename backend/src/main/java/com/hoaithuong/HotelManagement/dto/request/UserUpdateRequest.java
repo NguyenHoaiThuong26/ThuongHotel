@@ -18,6 +18,7 @@ public class UserUpdateRequest {
     String address;
     LocalDate dateOfBirth;
     String phone;
+    String oldPassword; // New field for security check
     String password;
     List<String> roles;
 }

@@ -2,15 +2,11 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
-export default function RevenueChart() {
-  const data = [
-    { month: "Jan", revenue: 28500, target: 30000 },
-    { month: "Feb", revenue: 31200, target: 30000 },
-    { month: "Mar", revenue: 35600, target: 32000 },
-    { month: "Apr", revenue: 38400, target: 35000 },
-    { month: "May", revenue: 42000, target: 40000 },
-    { month: "Jun", revenue: 45000, target: 45000 },
-  ]
+interface ChartProps {
+  data: any[];
+}
+
+export default function RevenueChart({ data }: ChartProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -20,7 +16,7 @@ export default function RevenueChart() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis />
-          <Tooltip formatter={(value: number | string) => `$${value}`} />
+          <Tooltip formatter={(value: number | string) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(value))} />
           <Legend />
           <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} name="Doanh thu thực tế" />
           <Line type="monotone" dataKey="target" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" name="Mục tiêu" />

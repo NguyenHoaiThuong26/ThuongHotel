@@ -1,105 +1,148 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Edit2, Trash2, Shield } from "lucide-react"
-import UserModal from "../admin/userModal"
+import { useState, useEffect } from "react"
+import { Plus, Edit2, Trash2, Shield, User as UserIcon } from "lucide-react"
+import { API_BASE_URL } from "../../configuration/configuration"
+import toast from "react-hot-toast"
 
-interface User {
-  id: string
-  name: string
-  email: string
-  role: "admin" | "receptionist" | "customer"
-  status: "active" | "inactive"
-  joinDate: string
+interface Role {
+  roleId: string;
+  roleName: string;
 }
 
-const sampleUsers: User[] = [
-  {
-    id: "U001",
-    name: "Sarah Anderson",
-    email: "sarah.anderson@luxury.com",
-    role: "admin",
-    status: "active",
-    joinDate: "2023-01-15",
-  },
-  {
-    id: "U002",
-    name: "Mike Thompson",
-    email: "mike.thompson@luxury.com",
-    role: "receptionist",
-    status: "active",
-    joinDate: "2023-03-20",
-  },
-  {
-    id: "U003",
-    name: "Emily Brown",
-    email: "emily.brown@email.com",
-    role: "customer",
-    status: "active",
-    joinDate: "2023-06-10",
-  },
-  {
-    id: "U004",
-    name: "James Wilson",
-    email: "james.wilson@email.com",
-    role: "customer",
-    status: "inactive",
-    joinDate: "2023-02-05",
-  },
-]
+interface RoleEntity {
+  roleId: string;
+  roleName: string;
+}
+
+interface User {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roles: Role[];
+  dob: string;
+}
 
 export default function UserManagement() {
-  const [users, setUsers] = useState<User[]>(sampleUsers)
+  const [users, setUsers] = useState<User[]>([])
+  const [availableRoles, setAvailableRoles] = useState<RoleEntity[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
   const [showModal, setShowModal] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = roleFilter === "all" || user.role === roleFilter
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter
-    return matchesSearch && matchesRole && matchesStatus
-  })
+  useEffect(() => {
+    fetchUsers()
+    fetchRoles()
+  }, [])
 
-  const handleAddUser = (newUser: Omit<User, "id">) => {
-    const user: User = { ...newUser, id: `U${Date.now()}` }
-    setUsers([...users, user])
-    setShowModal(false)
-  }
-
-  const handleEditUser = (updatedUser: User) => {
-    setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)))
-    setEditingUser(null)
-    setShowModal(false)
-  }
-
-  const handleDeleteUser = (id: string) => {
-    setUsers(users.filter((u) => u.id !== id))
-  }
-
-  const toggleUserStatus = (id: string) => {
-    setUsers(users.map((u) => (u.id === id ? { ...u, status: u.status === "active" ? "inactive" : "active" } : u)))
-  }
-
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "bg-red-100 text-red-800"
-      case "receptionist":
-        return "bg-blue-100 text-blue-800"
-      case "customer":
-        return "bg-green-100 text-green-800"
-      default:
-        return "bg-gray-100 text-gray-800"
+  const fetchRoles = async () => {
+    const token = localStorage.getItem("token")
+    try {
+      const response = await fetch(`${API_BASE_URL}/roles`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setAvailableRoles(data.result || [])
+      }
+    } catch (error) {
+      console.error("Error fetching roles", error)
     }
   }
 
-  const getStatusColor = (status: string) => {
-    return status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+  const fetchUsers = async () => {
+    const token = localStorage.getItem("token")
+    try {
+      const response = await fetch(`${API_BASE_URL}/users`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setUsers(data.result || [])
+      } else {
+        toast.error("Không thể tải danh sách người dùng")
+      }
+    } catch (error) {
+      console.error("Error fetching users", error)
+      toast.error("Lỗi kết nối")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleUpdateUser = async (userId: string, selectedRoleIds: string[]) => {
+    const token = localStorage.getItem("token")
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          roles: selectedRoleIds
+        })
+      })
+      if (response.ok) {
+        toast.success("Đã cập nhật vai trò người dùng")
+        fetchUsers() // Refresh user list
+        setShowModal(false)
+        setEditingUser(null)
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.message || "Không thể cập nhật người dùng")
+      }
+    } catch (error) {
+      console.error("Error updating user", error)
+      toast.error("Lỗi kết nối")
+    }
+  }
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa người dùng này?")) return
+
+    const token = localStorage.getItem("token")
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (response.ok) {
+        toast.success("Đã xóa người dùng")
+        setUsers(users.filter(u => u.userId !== userId))
+      } else {
+        toast.error("Không thể xóa người dùng")
+      }
+    } catch (error) {
+      console.error("Error deleting user", error)
+      toast.error("Lỗi kết nối")
+    }
+  }
+
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.firstName && user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.lastName && user.lastName.toLowerCase().includes(searchTerm.toLowerCase()))
+
+    const matchesRole = roleFilter === "all" || user.roles.some(r => r.roleName === roleFilter)
+
+    return matchesSearch && matchesRole
+  })
+
+
+
+  const getRoleBadge = (roleName: string) => {
+    switch (roleName) {
+      case 'ADMIN': return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800"><Shield size={12} /> Admin</span>
+      case 'RECEPTIONIST': return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-yellow-100 text-yellow-800"><Shield size={12} /> Receptionist</span>
+      case 'USER': return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800"><UserIcon size={12} /> User</span>;
+      default: return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-800">{roleName}</span>
+    }
   }
 
   return (
@@ -109,10 +152,10 @@ export default function UserManagement() {
         <h1 className="text-3xl font-bold text-slate-900">Quản lý người dùng</h1>
         <button
           onClick={() => {
-            setEditingUser(null)
-            setShowModal(true)
+            toast.error("Chức năng tạo người dùng mới chưa được triển khai")
           }}
-          className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
+          className="flex items-center gap-2 bg-slate-400 text-white px-4 py-2 rounded-lg cursor-not-allowed"
+          disabled
         >
           <Plus size={20} />
           Thêm người dùng
@@ -121,11 +164,11 @@ export default function UserManagement() {
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-lg shadow-md">
-        <div>
+        <div className="md:col-span-2">
           <label className="text-sm font-medium text-slate-700">Tìm kiếm</label>
           <input
             type="text"
-            placeholder="Tìm theo tên hoặc email..."
+            placeholder="Tìm theo username hoặc tên..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -139,21 +182,9 @@ export default function UserManagement() {
             className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
             <option value="all">Tất cả vai trò</option>
-            <option value="admin">Quản trị viên</option>
-            <option value="receptionist">Lễ tân</option>
-            <option value="customer">Khách hàng</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-slate-700">Trạng thái</label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-          >
-            <option value="all">Tất cả trạng thái</option>
-            <option value="active">Hoạt động</option>
-            <option value="inactive">Không hoạt động</option>
+            <option value="ADMIN">Quản trị viên (ADMIN)</option>
+            <option value="RECEPTIONIST">Lễ tân (RECEPTIONIST)</option>
+            <option value="USER">Người dùng (USER)</option>
           </select>
         </div>
         <div>
@@ -166,66 +197,60 @@ export default function UserManagement() {
 
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">ID người dùng</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Tên</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Email</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Vai trò</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Trạng thái</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Ngày tham gia</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b border-slate-200 hover:bg-slate-50 transition">
-                  <td className="px-6 py-4 text-sm font-medium text-slate-900">{user.id}</td>
-                  <td className="px-6 py-4 text-sm text-slate-700">{user.name}</td>
-                  <td className="px-6 py-4 text-sm text-slate-700">{user.email}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(user.role)}`}
-                    >
-                      {user.role === "admin" && <Shield size={14} />}
-                      {user.role === "admin" ? "Quản trị viên" : user.role === "receptionist" ? "Lễ tân" : "Khách hàng"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => toggleUserStatus(user.id)}
-                      className={`px-3 py-1 rounded-lg text-sm font-medium cursor-pointer border-0 transition ${getStatusColor(user.status)}`}
-                    >
-                      {user.status === "active" ? "Hoạt động" : "Không hoạt động"}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-700">{user.joinDate}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          setEditingUser(user)
-                          setShowModal(true)
-                        }}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded transition"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded transition"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
+        {isLoading ? (
+          <div className="p-8 text-center text-slate-500">Đang tải dữ liệu...</div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="p-8 text-center text-slate-500">Không tìm thấy người dùng.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">User ID</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Username</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Họ và Tên</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900">Vai trò</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-slate-900 whitespace-nowrap">Hành động</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr key={user.userId} className="border-b border-slate-200 hover:bg-slate-50 transition">
+                    <td className="px-6 py-4 text-sm text-slate-500 font-mono text-xs">{user.userId}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-slate-900">{user.username}</td>
+                    <td className="px-6 py-4 text-sm text-slate-700">{user.lastName} {user.firstName}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-1 flex-wrap">
+                        {user.roles.map(r => getRoleBadge(r.roleName))}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingUser(user)
+                            setShowModal(true)
+                          }}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded transition"
+                          title="Sửa vai trò"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user.userId)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded transition"
+                          title="Xóa"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Stats */}
@@ -235,30 +260,120 @@ export default function UserManagement() {
           <p className="text-2xl font-bold text-slate-900 mt-1">{filteredUsers.length}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Người dùng hoạt động</p>
-          <p className="text-2xl font-bold text-green-600 mt-1">
-            {filteredUsers.filter((u) => u.status === "active").length}
+          <p className="text-sm text-slate-600">Quản trị viên (Admin)</p>
+          <p className="text-2xl font-bold text-red-600 mt-1">
+            {filteredUsers.filter(u => u.roles.some(r => r.roleName === 'ADMIN')).length}
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-sm text-slate-600">Quản trị viên</p>
-          <p className="text-2xl font-bold text-red-600 mt-1">
-            {filteredUsers.filter((u) => u.role === "admin").length}
+          <p className="text-sm text-slate-600">Người dùng (User)</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">
+            {filteredUsers.filter(u => !u.roles.some(r => r.roleName === 'ADMIN')).length}
           </p>
         </div>
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <UserModal
+      {/* Role Update Modal */}
+      {showModal && editingUser && (
+        <RoleUpdateModal
           user={editingUser}
-          onSave={editingUser ? handleEditUser : handleAddUser}
+          availableRoles={availableRoles}
+          onSave={handleUpdateUser}
           onClose={() => {
             setShowModal(false)
             setEditingUser(null)
           }}
         />
       )}
+    </div>
+  )
+}
+
+// Simple Role Update Modal Component
+function RoleUpdateModal({
+  user,
+  availableRoles,
+  onSave,
+  onClose
+}: {
+  user: User
+  availableRoles: RoleEntity[]
+  onSave: (userId: string, roleIds: string[]) => void
+  onClose: () => void
+}) {
+  const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(
+    availableRoles
+      .filter(role => user.roles.some(r => r.roleName === role.roleName))
+      .map(role => role.roleId)
+  )
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (selectedRoleIds.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một vai trò")
+      return
+    }
+    onSave(user.userId, selectedRoleIds)
+  }
+
+  const toggleRole = (roleId: string) => {
+    setSelectedRoleIds(prev =>
+      prev.includes(roleId)
+        ? prev.filter(id => id !== roleId)
+        : [...prev, roleId]
+    )
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full">
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-xl font-bold text-slate-900">Cập nhật vai trò</h2>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-700">
+            <span className="text-2xl">×</span>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <p className="text-sm text-slate-600">Username: <span className="font-semibold text-slate-900">{user.username}</span></p>
+            <p className="text-sm text-slate-600">Họ tên: <span className="font-semibold text-slate-900">{user.lastName} {user.firstName}</span></p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Chọn vai trò:</label>
+            <div className="space-y-2">
+              {availableRoles.map(role => (
+                <label key={role.roleId} className="flex items-center gap-2 p-2 border rounded hover:bg-slate-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedRoleIds.includes(role.roleId)}
+                    onChange={() => toggleRole(role.roleId)}
+                    className="w-4 h-4 text-teal-600"
+                  />
+                  <span className="text-sm font-medium">{role.roleName}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t">
+            <button
+              type="submit"
+              className="flex-1 bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition font-medium"
+            >
+              Cập nhật
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-slate-200 text-slate-900 py-2 rounded-lg hover:bg-slate-300 transition font-medium"
+            >
+              Hủy
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

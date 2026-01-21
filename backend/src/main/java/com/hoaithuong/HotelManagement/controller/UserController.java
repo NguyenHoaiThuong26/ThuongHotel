@@ -1,6 +1,7 @@
 package com.hoaithuong.HotelManagement.controller;
 
 import com.hoaithuong.HotelManagement.dto.request.ApiResponse;
+import com.hoaithuong.HotelManagement.dto.request.ChangePasswordRequest;
 import com.hoaithuong.HotelManagement.dto.request.UserCreationRequest;
 import com.hoaithuong.HotelManagement.dto.request.UserUpdateRequest;
 import com.hoaithuong.HotelManagement.dto.response.UserResponse;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/users")
 @Slf4j
@@ -25,14 +25,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request){
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))
                 .build();
     }
 
     @GetMapping
-    ApiResponse<List<UserResponse>> getUsers(){
+    ApiResponse<List<UserResponse>> getUsers() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         log.info("Username: {}", authentication.getName());
@@ -44,21 +44,21 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId){
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getUser(userId))
                 .build();
     }
 
     @GetMapping("/myInfo")
-    ApiResponse<UserResponse> getMyInfo(){
+    ApiResponse<UserResponse> getMyInfo() {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
                 .build();
     }
 
     @DeleteMapping("/{userId}")
-    ApiResponse<String> deleteUser(@PathVariable String userId){
+    ApiResponse<String> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder()
                 .result("User has been deleted")
@@ -66,11 +66,18 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request){
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
                 .build();
     }
 
+    @PutMapping("/{userId}/password")
+    ApiResponse<String> changePassword(@PathVariable String userId, @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(userId, request);
+        return ApiResponse.<String>builder()
+                .result("User password has been changed")
+                .build();
+    }
 
 }

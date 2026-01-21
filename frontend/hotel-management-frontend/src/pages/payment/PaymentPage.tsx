@@ -100,25 +100,25 @@ export default function PaymentPage() {
                   <div className="pt-4">
                     <p className="text-lg font-medium text-slate-900">
                       Số đêm: {nights} <br />
-                      Tổng giá: ${totalPrice}
+                      Tổng giá: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}
                     </p>
                   </div>
 
                   {/* Nút Back + Pay */}
                   <div className="flex flex-col md:flex-row gap-4 mt-4">
                     <button
-                        onClick={() => navigate(`/booking/${room.id}`)}
-                        className="flex-1 h-12 border border-teal-500 text-teal-500 bg-transparent hover:bg-teal-50 font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      onClick={() => navigate(`/booking/${room.id}`)}
+                      className="flex-1 h-12 border border-teal-500 text-teal-500 bg-transparent hover:bg-teal-50 font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
-                        Quay lại đặt phòng
+                      Quay lại đặt phòng
                     </button>
 
                     <button
-                        onClick={handleVnpayPayment}
-                        disabled={isProcessing}
-                        className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold shadow-md hover:brightness-105 h-12 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleVnpayPayment}
+                      disabled={isProcessing}
+                      className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold shadow-md hover:brightness-105 h-12 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isProcessing ? "Đang xử lý..." : "Thanh toán với VNPAY"}
+                      {isProcessing ? "Đang xử lý..." : "Thanh toán với VNPAY"}
                     </button>
                   </div>
 

@@ -1,9 +1,9 @@
-import { Users, Wifi } from "lucide-react" 
+import { Users, Wifi } from "lucide-react"
 import { Button } from "../../components/ui/button"
 import { Link } from 'react-router-dom'
 
 export interface RoomCardProps {
-  id: number
+  id: string
   name: string
   description: string
   price: number
@@ -24,14 +24,10 @@ export default function RoomCard({
   description,
   price,
   image,
-  status,
   type,
   capacity,
   amenities,
 }: RoomCardProps) {
-  const statusColor =
-    status === "Available" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 duration-300 h-full flex flex-col">
 
@@ -42,11 +38,6 @@ export default function RoomCard({
           alt={name}
           className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
         />
-        <div className="absolute top-4 right-4">
-          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColor}`}>
-            {status === "Available" ? "Còn trống" : "Đã đặt"}
-          </span>
-        </div>
       </div>
 
       {/* Nội dung */}
@@ -87,7 +78,9 @@ export default function RoomCard({
         <div className="mt-auto">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <span className="text-2xl font-bold text-teal-600">${price}</span>
+              <span className="text-2xl font-bold text-teal-600">
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}
+              </span>
               <p className="text-xs text-slate-500">mỗi đêm</p>
             </div>
           </div>

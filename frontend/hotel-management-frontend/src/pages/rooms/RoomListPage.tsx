@@ -1,202 +1,100 @@
 "use client"
 
-import { useState } from "react"
-import { Search, Filter } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Search, Filter, Loader2 } from "lucide-react"
 import Navbar from "../../components/layout/navbar"
 import Footer from "../../components/layout/footer"
 import RoomCard from "../../components/room/roomCard"
+import { API_BASE_URL } from "../../configuration/configuration"
 import type { RoomCardProps } from "../../components/room/roomCard"
+import toast from "react-hot-toast"
 
-// Bản dịch tiện nghi sang tiếng Việt
-const translateAmenities = (amenities: string[]) => {
-  return amenities.map((amenity) => {
-    switch (amenity) {
-      case "AC":
-        return "Điều hòa"
-      case "WiFi":
-        return "WiFi"
-      case "TV":
-        return "TV"
-      case "Mini Bar":
-        return "Mini Bar"
-      case "Jacuzzi":
-        return "Bồn tắm Jacuzzi"
-      case "Terrace":
-        return "Sân hiên"
-      case "Spa":
-        return "Spa"
-      case "Chef Kitchen":
-        return "Bếp riêng"
-      case "Butler Service":
-        return "Dịch vụ hầu phòng"
-      case "Garden Access":
-        return "Lối ra vườn"
-      case "Work Desk":
-        return "Bàn làm việc"
-      case "High-Speed Internet":
-        return "Internet tốc độ cao"
-      case "Spa Tub":
-        return "Bồn tắm Spa"
-      case "Rose Petals":
-        return "Cánh hoa hồng"
-      case "Champagne":
-        return "Rượu Champagne"
-      case "Pool":
-        return "Hồ bơi"
-      case "Kitchenette":
-        return "Gian bếp nhỏ"
-      case "Living Area":
-        return "Khu vực sinh hoạt"
-      case "Rooftop Access":
-        return "Lối lên sân thượng"
-      case "Skybar":
-        return "Skybar"
-      case "Private Elevator":
-        return "Thang máy riêng"
-      case "Porch":
-        return "Hiên"
-      case "Nature Trail Access":
-        return "Lối đi thiên nhiên"
-      case "AV Equipment":
-        return "Thiết bị AV"
-      case "Catering":
-        return "Dịch vụ ăn uống"
-      case "Multiple Rooms":
-        return "Nhiều phòng"
-      default:
-        return amenity
-    }
-  })
-}
-
-const ROOMS_DATA: RoomCardProps[] = [
-  {
-    id: 1,
-    name: "Phòng Deluxe Cao Cấp",
-    type: "Standard",
-    description: "Phòng thoải mái với tầm nhìn thành phố và tiện nghi hiện đại",
-    price: 149,
-    image: "/images/luxury-hotel-deluxe-suite.jpg",
-    status: "Available",
-    capacity: 2,
-    amenities: translateAmenities(["AC", "WiFi", "TV", "Mini Bar"]),
-  },
-  {
-    id: 2,
-    name: "Suite Hướng Biển Cao Cấp",
-    type: "Suite",
-    description: "Suite cao cấp nhìn ra biển với ban công riêng",
-    price: 249,
-    image: "/images/luxury-hotel-ocean-view.jpg",
-    status: "Available",
-    capacity: 4,
-    amenities: translateAmenities(["AC", "WiFi", "TV", "Jacuzzi", "Terrace"]),
-  },
-  {
-    id: 3,
-    name: "Suite Tổng Thống",
-    type: "Luxury",
-    description: "Sang trọng tối đa với khu vực phòng khách và ăn riêng",
-    price: 599,
-    image: "/images/luxury-hotel-presidential-suite.jpg",
-    status: "Booked",
-    capacity: 6,
-    amenities: translateAmenities(["AC", "WiFi", "TV", "Spa", "Chef Kitchen", "Butler Service"]),
-  },
-  {
-    id: 4,
-    name: "Phòng Hướng Vườn",
-    type: "Standard",
-    description: "Phòng yên tĩnh với lối ra vườn riêng",
-    price: 129,
-    image: "/images/luxury-hotel-garden-view.jpg",
-    status: "Available",
-    capacity: 2,
-    amenities: translateAmenities(["AC", "WiFi", "TV", "Garden Access"]),
-  },
-  {
-    id: 5,
-    name: "Phòng Doanh Nhân Executive",
-    type: "Standard",
-    description: "Phòng hiện đại dành cho khách doanh nhân với bàn làm việc",
-    price: 179,
-    image: "/images/business-hotel-room.jpg",
-    status: "Available",
-    capacity: 2,
-    amenities: translateAmenities(["AC", "WiFi", "TV", "Work Desk", "High-Speed Internet"]),
-  },
-  {
-    id: 6,
-    name: "Suite Tuần Trăng Mật",
-    type: "Suite",
-    description: "Suite lãng mạn hoàn hảo cho các cặp đôi với tiện nghi spa",
-    price: 349,
-    image: "/images/romantic-hotel-suite.jpg",
-    status: "Available",
-    capacity: 2,
-    amenities: translateAmenities(["AC", "WiFi", "Spa Tub", "Rose Petals", "Champagne"]),
-  },
-  {
-    id: 7,
-    name: "Biệt Thự Gia Đình",
-    type: "Villa",
-    description: "Biệt thự rộng rãi với nhiều phòng ngủ cho gia đình",
-    price: 449,
-    image: "/images/family-villa-resort.jpg",
-    status: "Booked",
-    capacity: 8,
-    amenities: translateAmenities(["AC", "WiFi", "TV", "Pool", "Kitchenette", "Living Area"]),
-  },
-  {
-    id: 8,
-    name: "Penthouse Cao Cấp",
-    type: "Luxury",
-    description: "Penthouse độc quyền với tầm nhìn 360 độ thành phố",
-    price: 799,
-    image: "/images/penthouse-luxury-room.jpg",
-    status: "Available",
-    capacity: 4,
-    amenities: translateAmenities(["AC", "WiFi", "Rooftop Access", "Skybar", "Private Elevator"]),
-  },
-  {
-    id: 9,
-    name: "Cottage Ven Sông",
-    type: "Standard",
-    description: "Nhà nghỉ ven sông với tầm nhìn và tiếp cận thiên nhiên",
-    price: 189,
-    image: "/images/riverside-cottage-hotel.jpg",
-    status: "Available",
-    capacity: 3,
-    amenities: translateAmenities(["AC", "WiFi", "Porch", "Nature Trail Access"]),
-  },
-  {
-    id: 10,
-    name: "Suite Grand Ballroom",
-    type: "Suite",
-    description: "Suite tinh tế, lý tưởng cho sự kiện và lễ kỷ niệm",
-    price: 399,
-    image: "/images/grand-ballroom-suite.jpg",
-    status: "Available",
-    capacity: 50,
-    amenities: translateAmenities(["AV Equipment", "Catering", "WiFi", "Multiple Rooms"]),
-  },
-]
-
+import { useSearchParams } from "react-router-dom"
 
 export default function RoomsPage() {
+  const [searchParams] = useSearchParams()
+  const [rooms, setRooms] = useState<RoomCardProps[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("All")
   const [filterStatus, setFilterStatus] = useState("All")
   const [sortBy, setSortBy] = useState("name")
 
+  // Search States
+  const [checkIn, setCheckIn] = useState(searchParams.get("checkIn")?.split("T")[0] || "")
+  const [checkOut, setCheckOut] = useState(searchParams.get("checkOut")?.split("T")[0] || "")
+  const [guests, setGuests] = useState(Number(searchParams.get("guests")) || 1)
+
+  const [roomTypes, setRoomTypes] = useState<string[]>([])
+
+  useEffect(() => {
+    fetchRooms()
+    fetchRoomTypes()
+  }, [])
+
+  const fetchRoomTypes = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/room-types`)
+      if (response.ok) {
+        const data = await response.json()
+        const types = data.result.map((t: any) => t.typeName)
+        setRoomTypes(types)
+      }
+    } catch (error) {
+      console.error("Error fetching room types", error)
+    }
+  }
+
+  const fetchRooms = async () => {
+    try {
+      setIsLoading(true)
+      let url = `${API_BASE_URL}/rooms`
+
+      if (checkIn && checkOut) {
+        // Append default times: 14:00 for check-in availability and 12:00 for check-out
+        // This ensures compatibility with backend's expected LocalDateTime format
+        const start = `${checkIn}T14:00:00`
+        const end = `${checkOut}T12:00:00`
+        url = `${API_BASE_URL}/rooms/available?checkIn=${start}&checkOut=${end}`
+      }
+
+      const response = await fetch(url)
+      if (response.ok) {
+        const data = await response.json()
+        const mappedRooms: RoomCardProps[] = data.result.map((r: any) => ({
+          id: r.roomId,
+          name: r.roomNumber,
+          type: r.roomTypeName,
+          description: r.description || `Phòng ${r.roomTypeName} tiện nghi.`,
+          price: r.price,
+          image: r.images && r.images.length > 0 ? r.images[0] : "/placeholder.svg?height=200&width=400",
+          status: r.status === "AVAILABLE" ? "Available" : "Booked", // status mapped but hidden in UI
+          capacity: r.maxAdults + r.maxChildren,
+          amenities: r.amenities || [],
+          rating: 0,
+          reviews: 0
+        }))
+        setRooms(mappedRooms)
+      } else {
+        toast.error("Không thể tải danh sách phòng")
+      }
+    } catch (error) {
+      console.error("Error fetching rooms", error)
+      toast.error("Lỗi kết nối đến máy chủ")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Filter rooms based on search and filters
-  const filteredRooms = ROOMS_DATA.filter((room) => {
+  const filteredRooms = rooms.filter((room) => {
     const matchesSearch =
       room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       room.description.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = filterType === "All" || room.type === filterType
     const matchesStatus = filterStatus === "All" || room.status === filterStatus
-    return matchesSearch && matchesType && matchesStatus
+    const matchesGuests = room.capacity >= guests
+    return matchesSearch && matchesType && matchesStatus && matchesGuests
   })
 
   // Sort rooms
@@ -212,11 +110,8 @@ export default function RoomsPage() {
     }
   })
 
-  const roomTypes = ["Standard", "Suite", "Luxury", "Villa"]
-
   return (
     <div className="w-full overflow-x-hidden bg-white">
-      {/* Navigation */}
       <Navbar />
 
       {/* Page Header */}
@@ -224,7 +119,7 @@ export default function RoomsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">Các phòng của chúng tôi</h1>
           <p className="text-lg text-slate-600 max-w-2xl">
-            Khám phá bộ sưu tập các phòng và suite được thiết kế tinh tế, mang lại sự thoải mái và sang trọng.
+            Khám phá bộ sưu tập các phòng và suite được thiết kế tinh tế.
           </p>
         </div>
       </section>
@@ -232,48 +127,106 @@ export default function RoomsPage() {
       {/* Search and Filter Section */}
       <section className="bg-white border-b border-slate-200 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-4">
-            {/* Search Bar */}
-            <div className="md:col-span-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm phòng theo tên hoặc mô tả..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
+          <div className="flex flex-col gap-6">
+            {/* Row 1: General Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+              {/* Search Bar */}
+              <div>
+                <label htmlFor="searchTerm" className="block text-sm font-medium text-slate-700 mb-1">Tìm kiếm</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
+                  <input
+                    id="searchTerm"
+                    type="text"
+                    placeholder="Tên phòng..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+
+              {/* Filter by Type */}
+              <div>
+                <label htmlFor="filterType" className="block text-sm font-medium text-slate-700 mb-1">Loại phòng</label>
+                <select
+                  id="filterType"
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                >
+                  <option value="All">Tất cả</option>
+                  {roomTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Filter by Status */}
+              <div>
+                <label htmlFor="filterStatus" className="block text-sm font-medium text-slate-700 mb-1">Trạng thái</label>
+                <select
+                  id="filterStatus"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                >
+                  <option value="All">Tất cả</option>
+                  <option value="Available">Còn trống</option>
+                  <option value="Booked">Đã đặt</option>
+                </select>
+              </div>
+
+              {/* Guest Filter */}
+              <div>
+                <label htmlFor="guests" className="block text-sm font-medium text-slate-700 mb-1">Số khách</label>
+                <select
+                  id="guests"
+                  value={guests}
+                  onChange={(e) => setGuests(Number(e.target.value))}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                >
+                  {[1, 2, 3, 4, 5, 6, 8, 10].map(n => (
+                    <option key={n} value={n}>{n} Khách</option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* Filter by Type */}
-            <div>
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
-              >
-                <option value="All">Tất cả loại phòng</option>
-                {roomTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Filter by Status */}
-            <div>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
-              >
-                <option value="All">Tất cả trạng thái</option>
-                <option value="Available">Còn trống</option>
-                <option value="Booked">Đã đặt</option>
-              </select>
+            {/* Row 2: Date Filters & Action */}
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div className="md:col-span-5">
+                  <label htmlFor="checkIn" className="block text-sm font-medium text-slate-700 mb-1">Ngày đến</label>
+                  <input
+                    id="checkIn"
+                    type="date"
+                    value={checkIn}
+                    onChange={(e) => setCheckIn(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                  />
+                </div>
+                <div className="md:col-span-5">
+                  <label htmlFor="checkOut" className="block text-sm font-medium text-slate-700 mb-1">Ngày đi</label>
+                  <input
+                    id="checkOut"
+                    type="date"
+                    value={checkOut}
+                    onChange={(e) => setCheckOut(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <button
+                    onClick={fetchRooms}
+                    className="w-full h-[42px] bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium transition flex items-center justify-center shadow-sm"
+                  >
+                    Tìm & Lọc
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -289,11 +242,10 @@ export default function RoomsPage() {
                 <button
                   key={option.value}
                   onClick={() => setSortBy(option.value)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                    sortBy === option.value
-                      ? "bg-teal-500 text-white shadow-md"
-                      : "bg-teal-50 text-teal-700 hover:bg-teal-100"
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${sortBy === option.value
+                    ? "bg-teal-500 text-white shadow-md"
+                    : "bg-teal-50 text-teal-700 hover:bg-teal-100"
+                    }`}
                 >
                   {option.label}
                 </button>
@@ -301,9 +253,8 @@ export default function RoomsPage() {
             </div>
           </div>
 
-          {/* Results Count */}
           <p className="text-sm text-slate-600 mt-4 text-left">
-            Hiển thị {sortedRooms.length} trên {ROOMS_DATA.length} phòng
+            Hiển thị {sortedRooms.length} phòng
           </p>
         </div>
       </section>
@@ -311,7 +262,11 @@ export default function RoomsPage() {
       {/* Rooms Grid */}
       <section className="py-16 md:py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {sortedRooms.length > 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="animate-spin w-10 h-10 text-teal-600" />
+            </div>
+          ) : sortedRooms.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {sortedRooms.map((room) => (
                 <RoomCard key={room.id} {...room} />
@@ -327,7 +282,6 @@ export default function RoomsPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   )

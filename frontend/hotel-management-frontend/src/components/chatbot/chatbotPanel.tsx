@@ -4,25 +4,17 @@ import { useState, useEffect, useRef } from "react"
 import { ChatMessage } from "../../components/chatbot/chatMessage"
 import { ChatInput } from "../../components/chatbot/chatInput"
 import { QuickReplies } from "../../components/chatbot/quickReplies"
+import { API_BASE_URL } from "../../configuration/configuration"
+
+// OpenRouter config from environment variables
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+const OPENROUTER_MODEL = "openai/gpt-3.5-turbo"; // Or any other model supported by OpenRouter
 
 interface Message {
   id: string
   text: string
   timestamp: string
   isUser: boolean
-}
-
-const PREDEFINED_RESPONSES: { [key: string]: string } = {
-  available:
-    "Chúng tôi hiện có nhiều loại phòng sang trọng đang còn trống. Bạn muốn xem danh sách phòng hay tiến hành đặt ngay?",
-  booking:
-    "Tôi sẵn sàng hỗ trợ bạn đặt phòng! Bạn có thể chọn ngày nhận – trả phòng và loại phòng mong muốn.",
-  question:
-    "Tôi luôn sẵn sàng hỗ trợ 24/7! Bạn có thể hỏi tôi về tiện nghi, loại phòng, dịch vụ, hoặc bất kỳ thông tin nào bạn cần.",
-  contact: "Bạn có thể liên hệ bộ phận hỗ trợ qua email: support@hotelmanagement.com hoặc gọi số 1-800-HOTEL-NOW.",
-  faq: "Một số câu hỏi thường gặp: 1) Chính sách hủy phòng? 2) Có phục vụ ăn uống tại phòng không? 3) Bao gồm những tiện nghi gì? 4) Có bãi đậu xe không?",
-  default:
-    "Cảm ơn bạn đã đặt câu hỏi! Tôi luôn sẵn sàng hỗ trợ thông tin về phòng, dịch vụ hoặc đặt phòng. Tôi có thể giúp gì cho bạn?",
 }
 
 export function ChatbotPanel() {
@@ -37,6 +29,9 @@ export function ChatbotPanel() {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Store room context data
+  const [roomContext, setRoomContext] = useState<string>("")
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -45,25 +40,86 @@ export function ChatbotPanel() {
     scrollToBottom()
   }, [messages])
 
-  const getResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase()
-    if (lowerMessage.includes("phòng") || lowerMessage.includes("trống") || lowerMessage.includes("xem phòng")) {
-      return PREDEFINED_RESPONSES["available"]
-    } else if (
-      lowerMessage.includes("đặt") ||
-      lowerMessage.includes("booking") ||
-      lowerMessage.includes("reservation")
-    ) {
-      return PREDEFINED_RESPONSES["booking"]
-    } else if (lowerMessage.includes("faq") || lowerMessage.includes("câu hỏi")) {
-      return PREDEFINED_RESPONSES["faq"]
-    } else if (lowerMessage.includes("liên hệ") || lowerMessage.includes("hỗ trợ") || lowerMessage.includes("số điện thoại")) {
-      return PREDEFINED_RESPONSES["contact"]
+  // Fetch Room Data for AI Context
+  useEffect(() => {
+    const fetchRoomsForContext = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/rooms`)
+        if (response.ok) {
+          const data = await response.json()
+          const rooms = data.result || []
+          // Simplify data for AI context
+          const simplifiedRooms = rooms.map((r: any) => ({
+            name: r.roomNumber,
+            type: r.roomTypeName,
+            price: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(r.price),
+            status: r.status,
+            capacity: `${r.maxAdults} Adults, ${r.maxChildren} Children`,
+            amenities: r.amenities
+          }))
+          setRoomContext(JSON.stringify(simplifiedRooms))
+        }
+      } catch (error) {
+        console.error("Failed to fetch room context for AI", error)
+      }
     }
-    return PREDEFINED_RESPONSES["default"]
+
+    fetchRoomsForContext()
+  }, [])
+
+  const callOpenRouter = async (userMessage: string) => {
+    if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes("YOUR_OPENROUTER_API_KEY_HERE")) {
+      // Fallback if no key
+      return "Xin lỗi, tôi chưa được cấu hình API Key để trả lời thông minh. Vui lòng liên hệ admin.";
+    }
+
+    try {
+      const systemPrompt = `
+You are a helpful and polite hotel receptionist AI. 
+Here is the current list of rooms and their details, prices, and status in JSON format:
+${roomContext}
+
+When answering:
+1. Use Vietnamese language.
+2. Be professional and welcoming.
+3. Use the provided room data to answer questions about availability, price, amenities, etc.
+4. Always use VND (Vietnamese Dong) for currency.
+4. If the user asks to book, guide them to use the booking button on the room list.
+5. If the user asks about something not in the data, try to be helpful or ask them to contact support.
+`;
+
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": window.location.origin, // Required by OpenRouter
+          "X-Title": "Hotel Management AI" // Optional
+        },
+        body: JSON.stringify({
+          model: OPENROUTER_MODEL,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      if (data.choices && data.choices.length > 0) {
+        return data.choices[0].message.content;
+      } else {
+        console.error("OpenRouter Error:", data);
+        return "Xin lỗi, tôi đang gặp sự cố khi suy nghĩ. Vui lòng thử lại sau.";
+      }
+
+    } catch (error) {
+      console.error("AI Call Failed", error);
+      return "Xin lỗi, kết nối đến bộ não AI bị gián đoạn.";
+    }
   }
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
     const newUserMessage: Message = {
       id: Date.now().toString(),
       text: message,
@@ -74,18 +130,18 @@ export function ChatbotPanel() {
     setMessages(prev => [...prev, newUserMessage])
     setIsLoading(true)
 
-    // Giả lập thời gian bot trả lời
-    setTimeout(() => {
-      const botResponse = getResponse(message)
-      const newBotMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: botResponse,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        isUser: false,
-      }
-      setMessages(prev => [...prev, newBotMessage])
-      setIsLoading(false)
-    }, 800)
+    // Call AI
+    const aiResponse = await callOpenRouter(message);
+
+    const newBotMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      text: aiResponse,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      isUser: false,
+    }
+
+    setMessages(prev => [...prev, newBotMessage])
+    setIsLoading(false)
   }
 
   const handleQuickReply = (message: string) => {
@@ -97,7 +153,7 @@ export function ChatbotPanel() {
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-4 py-4 rounded-t-2xl md:rounded-t-2xl">
         <h3 className="font-semibold text-lg">Hỗ Trợ Khách Sạn</h3>
-        <p className="text-sm text-teal-100">Chúng tôi hỗ trợ 24/7</p>
+        <p className="text-sm text-teal-100">AI Support (OpenRouter)</p>
       </div>
 
       {/* Messages */}
@@ -114,7 +170,7 @@ export function ChatbotPanel() {
         {isLoading && (
           <div className="flex gap-3 mb-4">
             <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-sm font-semibold">H</span>
+              <span className="text-white text-sm font-semibold">AI</span>
             </div>
             <div className="flex items-center gap-1 bg-gray-200 px-4 py-2 rounded-lg">
               <div className="w-2 h-2 bg-gray-600 rounded-full animate-bounce" />

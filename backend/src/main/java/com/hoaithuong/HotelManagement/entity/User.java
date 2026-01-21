@@ -33,14 +33,17 @@ public class User {
     String phone;
 
     LocalDateTime createAt;
-    String status;
+    @Builder.Default
+    String status = "ACTIVE"; // Using this for general status if needed, or we can rely on enabled. Let's
+                              // keep existing status.
+
+    @Builder.Default
+    boolean enabled = false;
+
+    String verificationCode;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role> roles;
 
     @OneToMany(mappedBy = "user")
@@ -49,4 +52,3 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<ChatbotLog> chatbotLogs;
 }
-

@@ -2,11 +2,15 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Edit2, Save, X } from "lucide-react"
+import { API_BASE_URL } from "../../configuration/configuration"
+import toast from "react-hot-toast"
 
 interface PersonalInfoSectionProps {
   initialData?: {
+    userId?: string
+    username?: string
     firstName: string
     lastName: string
     email: string
@@ -17,6 +21,8 @@ interface PersonalInfoSectionProps {
 
 export default function PersonalInfoSection({
   initialData = {
+    userId: "",
+    username: "",
     firstName: "John",
     lastName: "Doe",
     email: "john@example.com",
@@ -25,6 +31,13 @@ export default function PersonalInfoSection({
   },
 }: PersonalInfoSectionProps) {
   const [isEditing, setIsEditing] = useState(false)
+  // Sync state when initialData changes (e.g. after API fetch)
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData)
+    }
+  }, [initialData])
+
   const [formData, setFormData] = useState(initialData)
   const [showSuccess, setShowSuccess] = useState(false)
 
@@ -33,10 +46,43 @@ export default function PersonalInfoSection({
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSave = () => {
-    setShowSuccess(true)
-    setIsEditing(false)
-    setTimeout(() => setShowSuccess(false), 3000)
+  const handleSave = async () => {
+    if (!formData.userId) {
+      toast.error("Không tìm thấy ID người dùng")
+      return
+    }
+
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch(`${API_BASE_URL}/users/${formData.userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          // Only send fields that exist in UserUpdateRequest, exclude userId, username (usually immutable)
+          // Also password and roles are omitted so backend ignores them (as per my backend fix)
+        }),
+      })
+
+      if (response.ok) {
+        setShowSuccess(true)
+        setIsEditing(false)
+        toast.success("Cập nhật thông tin thành công!")
+        setTimeout(() => setShowSuccess(false), 3000)
+      } else {
+        toast.error("Cập nhật thất bại. Vui lòng thử lại.")
+      }
+    } catch (error) {
+      console.error("Update error:", error)
+      toast.error("Đã xảy ra lỗi khi lưu thông tin.")
+    }
   }
 
   return (
@@ -112,18 +158,24 @@ export default function PersonalInfoSection({
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tên đăng nhập</label>
+          <input
+            type="text"
+            value={formData.username || ""}
+            readOnly
+            className="w-full px-4 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
+          />
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-          {isEditing ? (
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-            />
-          ) : (
-            <p className="text-gray-900 font-medium">{formData.email}</p>
-          )}
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            readOnly
+            className="w-full px-4 py-2 border border-slate-200 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
+          />
         </div>
 
         <div>

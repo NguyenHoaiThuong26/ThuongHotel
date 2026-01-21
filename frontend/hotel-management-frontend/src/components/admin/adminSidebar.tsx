@@ -1,26 +1,41 @@
 "use client"
 
 import { useState } from "react"
-import { LogOut, BarChart3, Users, Book, Home, Settings, Menu, X } from "lucide-react"
+import { LogOut, BarChart3, Users, Book, Home, Menu, X } from "lucide-react"
+import { hasRoleSync } from "../../utils/auth"
 
 interface AdminSidebarProps {
   currentSection: string
   onSectionChange: (section: string) => void
+  userRoles?: string[]
 }
 
-export default function AdminSidebar({ currentSection, onSectionChange }: AdminSidebarProps) {
+export default function AdminSidebar({ currentSection, onSectionChange, userRoles = [] }: AdminSidebarProps) {
   const [isOpen, setIsOpen] = useState(true)
 
-  const menuItems = [
+  const isStaffOnly = hasRoleSync(userRoles, "STAFF") && !hasRoleSync(userRoles, "ADMIN")
+  const isReceptionist = hasRoleSync(userRoles, "RECEPTIONIST") && !hasRoleSync(userRoles, "ADMIN")
+
+  const allMenuItems = [
     { id: "overview", label: "Tổng quan Dashboard", icon: Home },
+    { id: "room-types", label: "Quản lý loại phòng", icon: Book },
     { id: "rooms", label: "Quản lý phòng", icon: BarChart3 },
     { id: "bookings", label: "Quản lý đặt phòng", icon: Book },
     { id: "users", label: "Quản lý người dùng", icon: Users },
-    { id: "reports", label: "Báo cáo & Thống kê", icon: BarChart3 },
+    { id: "profile", label: "Thông tin tài khoản", icon: Users },
+    { id: "checkin", label: "Quét mã Check-in", icon: BarChart3 },
   ]
 
+  let menuItems = allMenuItems
+
+  if (isStaffOnly) {
+    menuItems = allMenuItems.filter(item => item.id === "rooms" || item.id === "bookings" || item.id === "profile")
+  } else if (isReceptionist) {
+    menuItems = allMenuItems.filter(item => item.id === "rooms" || item.id === "bookings" || item.id === "checkin" || item.id === "profile")
+  }
+
   const handleLogout = () => {
-    // Logic đăng xuất
+    localStorage.removeItem("token")
     window.location.href = "/login"
   }
 
@@ -36,9 +51,8 @@ export default function AdminSidebar({ currentSection, onSectionChange }: AdminS
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen bg-slate-900 text-white w-64 transform transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:relative z-40`}
+        className={`fixed left-0 top-0 h-screen bg-slate-900 text-white w-64 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:relative z-40`}
       >
         {/* Logo */}
         <div className="p-6 border-b border-slate-700">
@@ -58,11 +72,10 @@ export default function AdminSidebar({ currentSection, onSectionChange }: AdminS
                   onSectionChange(item.id)
                   setIsOpen(false)
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  isActive
-                        ? "bg-teal-600 text-white"
-                        : "bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
+                  ? "bg-teal-600 text-white"
+                  : "bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`}
               >
                 <Icon size={20} />
                 <span className="text-sm font-medium">{item.label}</span>

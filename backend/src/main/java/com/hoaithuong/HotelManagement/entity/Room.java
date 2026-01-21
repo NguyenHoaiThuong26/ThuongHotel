@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @Entity
 @Data
 @Builder
@@ -23,6 +24,8 @@ public class Room {
     int maxAdults;
     int maxChildren;
     int floor;
+    Double area;
+    @Column(columnDefinition = "TEXT")
     String description;
     String status;
 
@@ -35,5 +38,12 @@ public class Room {
 
     @OneToMany(mappedBy = "room")
     private List<Booking> bookings;
-}
 
+    @ElementCollection
+    @CollectionTable(name = "room_amenities", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "amenity")
+    private List<String> amenities;
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private boolean isDeleted = false;
+}

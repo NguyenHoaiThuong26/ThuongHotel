@@ -33,6 +33,8 @@ public class Booking {
     int numAdults;
     int numChildren;
     String status;
+    @Column(unique = true)
+    String bookingCode;
     Double totalPrice;
     LocalDateTime createdAt;
 
@@ -43,11 +45,9 @@ public class Booking {
     QRCode qrCode;
 
     @ManyToMany
-    @JoinTable(
-            name = "booking_services",
-            joinColumns = @JoinColumn(name = "booking_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
-    )
+    @JoinTable(name = "booking_services", joinColumns = @JoinColumn(name = "booking_id"), inverseJoinColumns = @JoinColumn(name = "service_id"))
     private List<ServiceEntity> services;
-}
 
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    Review review;
+}

@@ -1,6 +1,5 @@
 package com.hoaithuong.HotelManagement.controller;
 
-
 import com.hoaithuong.HotelManagement.dto.request.ApiResponse;
 import com.hoaithuong.HotelManagement.dto.request.RoleRequest;
 import com.hoaithuong.HotelManagement.dto.response.RoleResponse;
@@ -23,21 +22,19 @@ public class RoleController {
 
     @PostMapping
     ApiResponse<RoleResponse> create(@RequestBody RoleRequest request) {
-        return ApiResponse.<RoleResponse>builder()
-                .result(roleService.create(request))
-                .build();
+        RoleResponse result = roleService.create(request);
+        return new ApiResponse<RoleResponse>(1000, null, result);
     }
 
     @GetMapping
     ApiResponse<List<RoleResponse>> getAll() {
-        return ApiResponse.<List<RoleResponse>>builder()
-                .result(roleService.getAll())
-                .build();
+        List<RoleResponse> result = roleService.getAll();
+        return new ApiResponse<List<RoleResponse>>(1000, null, result);
     }
 
     @DeleteMapping("/{role}")
     ApiResponse<Void> delete(@PathVariable String role) {
         roleService.delete(role);
-        return ApiResponse.<Void>builder().build();
+        return new ApiResponse<Void>(1000, null, null);
     }
 }
