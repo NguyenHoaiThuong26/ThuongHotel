@@ -41,9 +41,8 @@ export default function BookingSummary({ room }: BookingSummaryProps) {
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
-              className={`w-4 h-4 ${
-                i < Math.floor(room.rating) ? "fill-yellow-400 text-yellow-400" : "text-slate-300"
-              }`}
+              className={`w-4 h-4 ${i < Math.floor(room.rating) ? "fill-yellow-400 text-yellow-400" : "text-slate-300"
+                }`}
             />
           ))}
         </div>
@@ -54,7 +53,9 @@ export default function BookingSummary({ room }: BookingSummaryProps) {
       {/* Giá */}
       <div className="border-t border-slate-200 pt-4">
         <p className="text-sm text-slate-600 mb-1">Giá mỗi đêm</p>
-        <p className="text-3xl font-bold text-teal-600">${room.price}</p>
+        <p className="text-3xl font-bold text-teal-600">
+          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(room.price)}
+        </p>
       </div>
 
       {/* Tiện ích chính */}

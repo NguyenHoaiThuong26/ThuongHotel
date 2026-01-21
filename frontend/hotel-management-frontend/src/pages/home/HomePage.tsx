@@ -1,32 +1,46 @@
 "use client"
 
-import { Link } from 'react-router-dom'
-import { Star, Wifi, Utensils, Dumbbell, Car, Droplets } from "lucide-react"
+import { Link, useNavigate } from 'react-router-dom'
+import { Star, Wifi, Utensils, Dumbbell, Car, Droplets, Calendar, Users } from "lucide-react"
 import Navbar from "../../components/layout/navbar"
 import Footer from "../../components/layout/footer"
 import { Button } from "../../components/ui/button"
+import { useState } from "react"
 
 export default function HomePage() {
 
+  const [checkIn, setCheckIn] = useState("")
+  const [checkOut, setCheckOut] = useState("")
+  const [guests, setGuests] = useState(1)
+  const navigate = useNavigate()
+
+  const handleSearch = () => {
+    const params = new URLSearchParams()
+    if (checkIn) params.append("checkIn", checkIn)
+    if (checkOut) params.append("checkOut", checkOut)
+    if (guests) params.append("guests", guests.toString())
+    navigate(`/all-rooms?${params.toString()}`)
+  }
+
   const rooms = [
-    { id:1, name:"Suite Deluxe", price:"$299", image:"/images/luxury-hotel-deluxe-suite.jpg", description:"Phòng suite rộng rãi với tầm nhìn thành phố và tiện nghi hiện đại" },
-    { id:2, name:"Phòng Nhìn Biển", price:"$349", image:"/images/luxury-hotel-ocean-view.jpg", description:"Phòng cao cấp nhìn ra biển với ban công riêng" },
-    { id:3, name:"Suite Tổng Thống", price:"$599", image:"/images/luxury-hotel-presidential-suite.jpg", description:"Sang trọng tối đa với phòng khách và phòng ăn riêng biệt" },
-    { id:4, name:"Phòng Vườn", price:"$249", image:"/images/luxury-hotel-garden-view.jpg", description:"Phòng yên tĩnh với lối ra vườn riêng" },
+    { id: 1, name: "Suite Deluxe", price: "2.990.000 VND", image: "/images/luxury-hotel-deluxe-suite.jpg", description: "Phòng suite rộng rãi với tầm nhìn thành phố và tiện nghi hiện đại" },
+    { id: 2, name: "Phòng Nhìn Biển", price: "3.490.000 VND", image: "/images/luxury-hotel-ocean-view.jpg", description: "Phòng cao cấp nhìn ra biển với ban công riêng" },
+    { id: 3, name: "Suite Tổng Thống", price: "5.990.000 VND", image: "/images/luxury-hotel-presidential-suite.jpg", description: "Sang trọng tối đa với phòng khách và phòng ăn riêng biệt" },
+    { id: 4, name: "Phòng Vườn", price: "2.490.000 VND", image: "/images/luxury-hotel-garden-view.jpg", description: "Phòng yên tĩnh với lối ra vườn riêng" },
   ]
 
   const amenities = [
-    { id:1, name:"Hồ bơi", icon:Droplets },
-    { id:2, name:"Nhà hàng", icon:Utensils },
-    { id:3, name:"Phòng tập Gym", icon:Dumbbell },
-    { id:4, name:"WiFi miễn phí", icon:Wifi },
-    { id:5, name:"Đỗ xe Valet", icon:Car },
+    { id: 1, name: "Hồ bơi", icon: Droplets },
+    { id: 2, name: "Nhà hàng", icon: Utensils },
+    { id: 3, name: "Phòng tập Gym", icon: Dumbbell },
+    { id: 4, name: "WiFi miễn phí", icon: Wifi },
+    { id: 5, name: "Đỗ xe Valet", icon: Car },
   ]
 
   const reviews = [
-    { id:1, name:"Sarah Johnson", rating:5, comment:"Dịch vụ xuất sắc và cảnh quan tuyệt đẹp.", image:"/images/profile-woman.jpg" },
-    { id:2, name:"Michael Chen", rating:5, comment:"Sự chú ý đến từng chi tiết thật đáng kinh ngạc.", image:"/images/profile-man.jpg" },
-    { id:3, name:"Emma Wilson", rating:5, comment:"Phòng ốc sang trọng kết hợp với dịch vụ khách sạn tuyệt vời.", image:"/images/profile-woman-2.jpg" },
+    { id: 1, name: "Sarah Johnson", rating: 5, comment: "Dịch vụ xuất sắc và cảnh quan tuyệt đẹp.", image: "/images/profile-woman.jpg" },
+    { id: 2, name: "Michael Chen", rating: 5, comment: "Sự chú ý đến từng chi tiết thật đáng kinh ngạc.", image: "/images/profile-man.jpg" },
+    { id: 3, name: "Emma Wilson", rating: 5, comment: "Phòng ốc sang trọng kết hợp với dịch vụ khách sạn tuyệt vời.", image: "/images/profile-woman-2.jpg" },
   ]
 
   return (
@@ -36,7 +50,7 @@ export default function HomePage() {
       {/* Hero */}
       <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
-          <img src="/images/luxury-hotel-lobby-grand.jpg" alt="Hình nền chính" className="w-full h-full object-cover"/>
+          <img src="/images/luxury-hotel-lobby-grand.jpg" alt="Hình nền chính" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20"></div>
         </div>
         <div className="relative z-10 text-center text-white px-4">
@@ -50,6 +64,56 @@ export default function HomePage() {
             </Button>
           </Link>
         </div>
+
+        {/* Search Bar */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-11/12 max-w-5xl z-20">
+          <div className="bg-white rounded-lg shadow-xl p-4 md:p-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-teal-500" /> Nhận phòng
+              </label>
+              <input
+                type="date"
+                className="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 outline-none text-slate-700"
+                value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-teal-500" /> Trả phòng
+              </label>
+              <input
+                type="date"
+                className="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 outline-none text-slate-700"
+                value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                <Users className="w-4 h-4 text-teal-500" /> Số khách
+              </label>
+              <select
+                className="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 outline-none text-slate-700 bg-white"
+                value={guests}
+                onChange={(e) => setGuests(Number(e.target.value))}
+              >
+                {[1, 2, 3, 4, 5, 6].map(num => (
+                  <option key={num} value={num}>{num} Khách</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Button
+                onClick={handleSearch}
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 h-[42px]"
+              >
+                Tìm Phòng
+              </Button>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* About */}
@@ -57,7 +121,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
-              <img src="/images/luxury-hotel-room-interior.jpg" alt="Phòng khách sạn" className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow"/>
+              <img src="/images/luxury-hotel-room-interior.jpg" alt="Phòng khách sạn" className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
             </div>
             <div className="order-1 md:order-2">
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Về Khách Sạn Của Chúng Tôi</h2>
@@ -84,14 +148,14 @@ export default function HomePage() {
           <p className="text-center text-slate-600 text-lg mb-12 max-w-2xl mx-auto">Khám phá bộ sưu tập phòng được thiết kế tinh tế của chúng tôi.</p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {rooms.map((room) => (
-              <div 
-                key={room.id} 
+              <div
+                key={room.id}
                 className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all transform hover:scale-105 duration-300 h-full flex flex-col"
               >
                 <div className="overflow-hidden h-48">
-                  <img 
-                    src={room.image} 
-                    alt={room.name} 
+                  <img
+                    src={room.image}
+                    alt={room.name}
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                   />
                 </div>
@@ -126,7 +190,7 @@ export default function HomePage() {
               return (
                 <div key={amenity.id} className="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-lg hover:bg-teal-50 transition-colors group">
                   <div className="w-16 h-16 bg-gradient-to-r from-teal-400 to-blue-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <IconComponent className="w-8 h-8 text-white"/>
+                    <IconComponent className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-slate-900">{amenity.name}</h3>
                 </div>
@@ -145,10 +209,10 @@ export default function HomePage() {
             {reviews.map((review) => (
               <div key={review.id} className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <div className="flex items-center mb-4">
-                  <img src={review.image} alt={review.name} className="w-12 h-12 rounded-full mr-4 object-cover"/>
+                  <img src={review.image} alt={review.name} className="w-12 h-12 rounded-full mr-4 object-cover" />
                   <div>
                     <h3 className="font-semibold text-slate-900">{review.name}</h3>
-                    <div className="flex gap-1">{[...Array(review.rating)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400"/>))}</div>
+                    <div className="flex gap-1">{[...Array(review.rating)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />))}</div>
                   </div>
                 </div>
                 <p className="text-slate-600 italic">"{review.comment}"</p>

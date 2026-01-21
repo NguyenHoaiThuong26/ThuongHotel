@@ -45,7 +45,7 @@ export default function BookingConfirmationModal({ isOpen, bookingData }: Bookin
           {/* Thông báo xác nhận */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <p className="text-green-800 text-sm">
-              Một email xác nhận đã được gửi đến <strong>{bookingData.formData.email}</strong>
+              Cảm ơn bạn đã đặt phòng với chúng tôi!
             </p>
           </div>
 
@@ -59,16 +59,8 @@ export default function BookingConfirmationModal({ isOpen, bookingData }: Bookin
                 <h4 className="font-semibold text-slate-900 mb-3">Thông tin khách</h4>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <p className="text-slate-600">Họ và tên</p>
-                    <p className="font-medium text-slate-900">{bookingData.formData.fullName}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-600">Email</p>
-                    <p className="font-medium text-slate-900">{bookingData.formData.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-600">Số điện thoại</p>
-                    <p className="font-medium text-slate-900">{bookingData.formData.phone}</p>
+                    <p className="text-slate-600">Số lượng khách</p>
+                    <p className="font-medium text-slate-900">{bookingData.formData.adults} Người lớn, {bookingData.formData.children} Trẻ em</p>
                   </div>
                 </div>
               </div>
@@ -105,27 +97,25 @@ export default function BookingConfirmationModal({ isOpen, bookingData }: Bookin
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-slate-600">
-                    {bookingData.nights} đêm × ${bookingData.pricePerNight}/đêm
+                    {bookingData.nights} đêm × {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bookingData.pricePerNight)}/đêm
                   </span>
-                  <span className="font-medium text-slate-900">${bookingData.nights * bookingData.pricePerNight}</span>
+                  <span className="font-medium text-slate-900">
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bookingData.nights * bookingData.pricePerNight)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-slate-600">
                   <span>Số khách</span>
-                  <span className="font-medium text-slate-900">{bookingData.formData.numGuests}</span>
+                  <span className="font-medium text-slate-900">{bookingData.formData.adults + bookingData.formData.children}</span>
                 </div>
-                {bookingData.formData.specialRequests && (
-                  <div className="border-t border-slate-200 pt-2">
-                    <p className="text-slate-600">Yêu cầu đặc biệt</p>
-                    <p className="font-medium text-slate-900 mt-1">{bookingData.formData.specialRequests}</p>
-                  </div>
-                )}
               </div>
 
               {/* Tổng giá */}
               <div className="border-t border-slate-200 pt-3">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-slate-900">Tổng giá</span>
-                  <span className="text-2xl font-bold text-teal-600">${bookingData.totalPrice}</span>
+                  <span className="text-2xl font-bold text-teal-600">
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bookingData.totalPrice)}
+                  </span>
                 </div>
               </div>
             </div>

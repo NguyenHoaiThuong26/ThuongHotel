@@ -4,8 +4,14 @@ import type React from "react"
 
 import { useState } from "react"
 import { Eye, EyeOff, Lock } from "lucide-react"
+import { API_BASE_URL } from "../../configuration/configuration"
+import toast from "react-hot-toast"
 
-export default function ChangePasswordSection() {
+interface ChangePasswordSectionProps {
+  userId?: string
+}
+
+export default function ChangePasswordSection({ userId }: ChangePasswordSectionProps) {
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -18,6 +24,7 @@ export default function ChangePasswordSection() {
   })
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -35,25 +42,61 @@ export default function ChangePasswordSection() {
     return errors
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setSuccess(false)
+    setIsSubmitting(true)
+
+    if (!userId) {
+      setError("Không tìm thấy thông tin người dùng")
+      setIsSubmitting(false)
+      return
+    }
 
     if (formData.newPassword !== formData.confirmPassword) {
       setError("Mật khẩu mới không khớp")
+      setIsSubmitting(false)
       return
     }
 
     const passwordErrors = validatePassword(formData.newPassword)
     if (passwordErrors.length > 0) {
       setError(`Mật khẩu phải bao gồm: ${passwordErrors.join(", ")}`)
+      setIsSubmitting(false)
       return
     }
 
-    setSuccess(true)
-    setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" })
-    setTimeout(() => setSuccess(false), 3000)
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch(`${API_BASE_URL}/users/${userId}/password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          newPassword: formData.newPassword,
+          oldPassword: formData.currentPassword
+        }),
+      })
+
+      if (response.ok) {
+        setSuccess(true)
+        toast.success("Đổi mật khẩu thành công!")
+        setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" })
+        setTimeout(() => setSuccess(false), 3000)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.message || "Đổi mật khẩu thất bại")
+        toast.error("Đổi mật khẩu thất bại")
+      }
+    } catch (error) {
+      console.error("Change password error:", error)
+      setError("Đã xảy ra lỗi khi kết nối server")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -158,9 +201,10 @@ export default function ChangePasswordSection() {
 
         <button
           type="submit"
-          className="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium"
+          disabled={isSubmitting}
+          className={`w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
-          Đổi mật khẩu
+          {isSubmitting ? 'Đang xử lý...' : 'Đổi mật khẩu'}
         </button>
       </form>
     </div>

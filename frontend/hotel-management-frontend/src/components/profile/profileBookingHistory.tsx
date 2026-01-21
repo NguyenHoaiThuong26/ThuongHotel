@@ -62,6 +62,7 @@ export default function BookingHistorySection({ bookings = mockBookings }: Booki
   }
 
   const handleCancelBooking = (id: string) => {
+    console.log("Canceling booking:", id);
     setCancelingId(null)
   }
 
@@ -99,8 +100,8 @@ export default function BookingHistorySection({ bookings = mockBookings }: Booki
                       {booking.status === "confirmed"
                         ? "Đã xác nhận"
                         : booking.status === "pending"
-                        ? "Chờ xử lý"
-                        : "Đã hủy"}
+                          ? "Chờ xử lý"
+                          : "Đã hủy"}
                     </span>
                   </div>
 

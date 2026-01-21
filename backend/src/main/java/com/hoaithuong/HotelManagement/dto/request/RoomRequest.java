@@ -1,4 +1,5 @@
 package com.hoaithuong.HotelManagement.dto.request;
+
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +24,8 @@ public class RoomRequest {
 
     int floor;
 
+    Double area;
+
     String description;
 
     @NotBlank
@@ -31,4 +34,7 @@ public class RoomRequest {
     @NotNull
     Long roomTypeId; // liên kết với RoomType
 
+    java.util.List<String> amenities;
+
+    java.util.List<String> retainedImages;
 }

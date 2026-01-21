@@ -9,6 +9,16 @@ import com.hoaithuong.HotelManagement.exception.ErrorCode;
 import com.hoaithuong.HotelManagement.mapper.RoomMapper;
 import com.hoaithuong.HotelManagement.repository.RoomRepository;
 import com.hoaithuong.HotelManagement.repository.RoomTypeRepository;
+import com.hoaithuong.HotelManagement.repository.RoomImageRepository;
+import com.hoaithuong.HotelManagement.entity.RoomImage;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+import java.util.ArrayList;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,23 +33,37 @@ import java.util.List;
 @Slf4j
 public class RoomService {
     RoomRepository roomRepository;
+    com.hoaithuong.HotelManagement.repository.BookingRepository bookingRepository;
     RoomTypeRepository roomTypeRepository;
+    RoomImageRepository roomImageRepository;
     RoomMapper roomMapper;
 
-    public List<RoomResponse> getAllRooms(String status, Long roomTypeId) {
-        List<Room> rooms;
+    // get available rooms
+    public List<RoomResponse> getAvailableRooms(java.time.LocalDateTime checkIn, java.time.LocalDateTime checkOut) {
+        List<Room> allRooms = roomRepository.findAll();
+        List<Room> activeRooms = allRooms.stream()
+                .filter(room -> !room.isDeleted() && "AVAILABLE".equalsIgnoreCase(room.getStatus()))
+                .toList();
 
-        if (status != null && roomTypeId != null) {
-            rooms = roomRepository.findByRoomType_RoomTypeIdAndStatus(roomTypeId, status);
-        } else if (status != null) {
-            rooms = roomRepository.findByStatus(status);
-        } else if (roomTypeId != null) {
-            rooms = roomRepository.findByRoomType_RoomTypeId(roomTypeId);
-        } else {
-            rooms = roomRepository.findAll();
+        if (checkIn == null || checkOut == null) {
+            return activeRooms.stream().map(roomMapper::toRoomResponse).toList();
         }
 
-        return rooms.stream().map(roomMapper::toRoomResponse).toList();
+        List<String> occupiedRoomIds = bookingRepository.findOccupiedRoomIds(checkIn, checkOut);
+
+        return activeRooms.stream()
+                .filter(room -> !occupiedRoomIds.contains(room.getRoomId()))
+                .map(roomMapper::toRoomResponse)
+                .toList();
+    }
+
+    public List<RoomResponse> getAllRooms(String status, Long roomTypeId, String keyword) {
+        List<Room> rooms = roomRepository.searchRooms(keyword, status, roomTypeId);
+
+        return rooms.stream()
+                .filter(room -> !room.isDeleted())
+                .map(roomMapper::toRoomResponse)
+                .toList();
     }
 
     // get room details
@@ -50,7 +74,7 @@ public class RoomService {
     }
 
     // create a room
-    public RoomResponse createRoom(RoomRequest request) {
+    public RoomResponse createRoom(RoomRequest request, List<MultipartFile> images) {
         if (roomRepository.existsByRoomNumber(request.getRoomNumber())) {
             throw new AppException(ErrorCode.ROOM_ALREADY_EXISTS);
         }
@@ -60,12 +84,53 @@ public class RoomService {
 
         Room room = roomMapper.toRoom(request);
         room.setRoomType(roomType);
+        room.setAmenities(request.getAmenities());
 
-        return roomMapper.toRoomResponse(roomRepository.save(room));
+        Room savedRoom = roomRepository.save(room);
+
+        if (images != null && !images.isEmpty()) {
+            List<RoomImage> roomImages = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String imageUrl = saveImage(image);
+                RoomImage roomImage = RoomImage.builder()
+                        .room(savedRoom)
+                        .imageUrl(imageUrl)
+                        .isPrimary(false) // Default logic, can be improved
+                        .build();
+                roomImages.add(roomImageRepository.save(roomImage));
+            }
+            savedRoom.setImages(roomImages);
+        }
+
+        return roomMapper.toRoomResponse(savedRoom);
+    }
+
+    private String saveImage(MultipartFile file) {
+        try {
+            String uploadDir = "uploads/rooms/";
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.lastIndexOf(".") > 0) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            String fileName = UUID.randomUUID().toString() + extension;
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return "http://localhost:8080/hotel/uploads/rooms/" + fileName; // Return full URL or relative path
+        } catch (IOException e) {
+            throw new RuntimeException("Could not store file " + file.getOriginalFilename() + ". Please try again!", e);
+        }
     }
 
     // update a room
-    public RoomResponse updateRoom(String roomId, RoomRequest request) {
+    public RoomResponse updateRoom(String roomId, RoomRequest request, List<MultipartFile> newImages) {
         var existingRoom = roomRepository.findById(roomId)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
@@ -80,16 +145,55 @@ public class RoomService {
         existingRoom.setDescription(request.getDescription());
         existingRoom.setStatus(request.getStatus());
         existingRoom.setRoomType(roomType);
+        existingRoom.setAmenities(request.getAmenities());
+
+        // Handle Images
+        List<RoomImage> currentImages = existingRoom.getImages();
+        if (currentImages == null)
+            currentImages = new ArrayList<>();
+
+        // 1. Identify images to delete (those not in retainedImages)
+        List<String> retainedUrls = request.getRetainedImages() != null ? request.getRetainedImages()
+                : new ArrayList<>();
+        List<RoomImage> imagesToDelete = new ArrayList<>();
+        List<RoomImage> imagesToKeep = new ArrayList<>();
+
+        for (RoomImage img : currentImages) {
+            if (!retainedUrls.contains(img.getImageUrl())) {
+                imagesToDelete.add(img);
+            } else {
+                imagesToKeep.add(img);
+            }
+        }
+
+        // Delete from DB and FS (optional FS deletion, skipping for safety now)
+        roomImageRepository.deleteAll(imagesToDelete);
+
+        // 2. Add new images
+        if (newImages != null && !newImages.isEmpty()) {
+            for (MultipartFile image : newImages) {
+                String imageUrl = saveImage(image);
+                RoomImage roomImage = RoomImage.builder()
+                        .room(existingRoom)
+                        .imageUrl(imageUrl)
+                        .isPrimary(false)
+                        .build();
+                imagesToKeep.add(roomImageRepository.save(roomImage));
+            }
+        }
+
+        existingRoom.setImages(imagesToKeep);
 
         return roomMapper.toRoomResponse(roomRepository.save(existingRoom));
     }
 
-    // delete a room
+    // delete a room (soft delete)
     public void deleteRoom(String roomId) {
-        if (!roomRepository.existsById(roomId))
-            throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        roomRepository.deleteById(roomId);
+        room.setDeleted(true);
+        roomRepository.save(room);
     }
 
     // update room status

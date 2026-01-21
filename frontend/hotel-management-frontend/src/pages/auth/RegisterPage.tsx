@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   Eye,
   EyeOff,
@@ -10,7 +10,9 @@ import {
   Calendar,
   Loader2,
 } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { API_BASE_URL } from "../../configuration/configuration"
+import toast from "react-hot-toast"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -20,10 +22,13 @@ export default function RegisterPage() {
     confirmPassword: "",
     phone: "",
     dateOfBirth: "",
+    firstName: "",
+    lastName: ""
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const validateForm = () => {
@@ -45,30 +50,91 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  const navigate = useNavigate()
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = localStorage.getItem("token")
+      if (token) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/users/myInfo`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+          if (response.ok) {
+            const data = await response.json()
+            const roles = data.result?.roles || []
+            if (roles.includes("ADMIN")) {
+              navigate("/admin", { replace: true })
+            } else {
+              navigate("/", { replace: true })
+            }
+          } else {
+            localStorage.removeItem("token")
+          }
+        } catch (error) {
+          console.error("Error checking login status", error)
+        }
+      }
+    }
+    checkLogin()
+  }, [navigate])
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validateForm()) return
 
     setIsLoading(true)
     try {
-      const response = await fetch("/auth/register", {
+      const registerResponse = await fetch(`${API_BASE_URL}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+          email: formData.email,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth,
+          firstName: formData.firstName,
+          lastName: formData.lastName
+        }),
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        console.log("Đăng ký thành công:", data)
+      if (registerResponse.ok) {
+        setIsSuccess(true)
+        toast.success("Đăng ký thành công! Vui lòng kiểm tra email.")
       } else {
-        setErrors({ email: "Đăng ký thất bại. Vui lòng thử lại." })
+        const errorData = await registerResponse.json().catch(() => null)
+        const errorMessage = errorData?.message || "Đăng ký thất bại. Vui lòng thử lại."
+        toast.error(errorMessage)
+        setErrors({})
       }
     } catch (error) {
       console.error("Lỗi đăng ký:", error)
-      setErrors({ email: "Đã xảy ra lỗi. Vui lòng thử lại." })
+      toast.error("Đã xảy ra lỗi kết nối. Vui lòng thử lại.")
+      setErrors({})
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
+          <Mail className="w-16 h-16 text-teal-600 mb-4 mx-auto" />
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Đăng ký thành công!</h2>
+          <p className="text-slate-600 mb-6">
+            Vui lòng kiểm tra email <strong>{formData.email}</strong> để xác thực tài khoản của bạn trước khi đăng nhập.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link to="/login" className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-6 rounded-lg transition">
+              Đến trang đăng nhập
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -114,28 +180,80 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} className="space-y-5">
             {/* Username */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2 text-left">
+              <label className="block text-sm font-medium text-slate-700 mb-2 text-left" htmlFor="username">
                 Tên đăng nhập
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
+                  id="username"
                   type="text"
                   value={formData.username}
                   onChange={(e) =>
                     setFormData({ ...formData, username: e.target.value })
                   }
                   placeholder="john_doe"
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                    errors.username
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${errors.username
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                    }`}
                 />
               </div>
               {errors.username && (
                 <p className="text-red-600 text-sm mt-1">{errors.username}</p>
               )}
+            </div>
+
+            {/* Họ và Tên */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2 text-left" htmlFor="firstName">
+                  Họ
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, firstName: e.target.value })
+                    }
+                    placeholder="Nguyễn"
+                    className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50 hover:border-slate-400 transition ${errors.firstName
+                      ? "border-red-500 bg-red-50"
+                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                      }`}
+                  />
+                </div>
+                {errors.firstName && (
+                  <p className="text-red-600 text-sm mt-1">{errors.firstName}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2 text-left" htmlFor="lastName">
+                  Tên
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, lastName: e.target.value })
+                    }
+                    placeholder="Văn A"
+                    className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50 hover:border-slate-400 transition ${errors.lastName
+                      ? "border-red-500 bg-red-50"
+                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                      }`}
+                  />
+                </div>
+                {errors.lastName && (
+                  <p className="text-red-600 text-sm mt-1">{errors.lastName}</p>
+                )}
+              </div>
             </div>
 
             {/* Email */}
@@ -152,11 +270,10 @@ export default function RegisterPage() {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="your@email.com"
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                    errors.email
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${errors.email
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                    }`}
                 />
               </div>
               {errors.email && (
@@ -178,11 +295,10 @@ export default function RegisterPage() {
                     setFormData({ ...formData, password: e.target.value })
                   }
                   placeholder="••••••••"
-                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                    errors.password
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
-                  }`}
+                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${errors.password
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                    }`}
                 />
                 <button
                   type="button"
@@ -211,11 +327,10 @@ export default function RegisterPage() {
                     setFormData({ ...formData, confirmPassword: e.target.value })
                   }
                   placeholder="••••••••"
-                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                    errors.confirmPassword
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
-                  }`}
+                  className={`w-full pl-10 pr-12 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${errors.confirmPassword
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                    }`}
                 />
                 <button
                   type="button"
@@ -244,11 +359,10 @@ export default function RegisterPage() {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder="0123456789"
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                    errors.phone
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${errors.phone
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                    }`}
                 />
               </div>
               {errors.phone && (
@@ -269,11 +383,10 @@ export default function RegisterPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, dateOfBirth: e.target.value })
                   }
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                    errors.dateOfBirth
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${errors.dateOfBirth
+                    ? "border-red-500 bg-red-50"
+                    : "border-slate-300 bg-slate-50 hover:border-slate-400"
+                    }`}
                 />
               </div>
               {errors.dateOfBirth && (

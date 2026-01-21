@@ -29,21 +29,36 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner() {
         return args -> {
-            if (userRepository.findByUsername("admin").isEmpty()) {
+            if (userRepository.findByUsername("admin@gmail.com").isEmpty()) {
                 Role adminRole = roleRepository.findByRoleName("ADMIN")
-                        .orElseThrow(() -> new RuntimeException("Role ADMIN not found in DB. Hãy insert sẵn vào bảng roles."));
+                        .orElseGet(() -> roleRepository.save(Role.builder()
+                                .roleName("ADMIN")
+                                .build()));
+
+                // Init USER role
+                roleRepository.findByRoleName("USER")
+                        .orElseGet(() -> roleRepository.save(Role.builder()
+                                .roleName("USER")
+                                .build()));
 
                 Set<Role> roles = new HashSet<>();
                 roles.add(adminRole);
 
                 User user = User.builder()
-                        .username("admin")
+                        .username("admin@gmail.com")
+                        .email("admin@gmail.com")
                         .password(passwordEncoder.encode("admin"))
                         .roles(roles)
+                        .firstName("System")
+                        .lastName("Admin")
                         .build();
 
                 userRepository.save(user);
                 log.warn("✅ Admin user has been created with default password: admin. Please change it.");
+            } else {
+                if (roleRepository.findByRoleName("USER").isEmpty()) {
+                    roleRepository.save(Role.builder().roleName("USER").build());
+                }
             }
         };
     }

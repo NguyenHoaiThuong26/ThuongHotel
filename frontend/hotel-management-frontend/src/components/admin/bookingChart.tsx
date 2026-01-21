@@ -2,15 +2,11 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
-export default function BookingChart() {
-  const data = [
-    { month: "Jan", bookings: 400, revenue: 24000 },
-    { month: "Feb", bookings: 320, revenue: 19200 },
-    { month: "Mar", bookings: 500, revenue: 30000 },
-    { month: "Apr", bookings: 470, revenue: 28200 },
-    { month: "May", bookings: 600, revenue: 36000 },
-    { month: "Jun", bookings: 720, revenue: 43200 },
-  ]
+interface ChartProps {
+  data: any[];
+}
+
+export default function BookingChart({ data }: ChartProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">

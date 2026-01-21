@@ -1,270 +1,110 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { Button } from "../../components/ui/button"
-import { AlertCircle } from "lucide-react"
-
-interface BookingFormProps {
-  roomId: number
-  pricePerNight: number
-  onSubmit: (formData: BookingFormData) => void
-  isLoading: boolean
-}
+import React, { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export interface BookingFormData {
-  fullName: string
-  email: string
-  phone: string
-  checkInDate: string
-  checkOutDate: string
-  numGuests: number
-  specialRequests: string
+  checkInDate: string;
+  checkOutDate: string;
+  adults: number;
+  children: number;
 }
 
-export default function BookingForm({ roomId, pricePerNight, onSubmit, isLoading }: BookingFormProps) {
-  const [formData, setFormData] = useState<BookingFormData>({
-    fullName: "",
-    email: "",
-    phone: "",
-    checkInDate: "",
-    checkOutDate: "",
-    numGuests: 1,
-    specialRequests: "",
-  })
+interface BookingFormProps {
+  pricePerNight: number;
+  onSubmit: (data: BookingFormData) => void;
+  isLoading: boolean;
+}
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+const BookingForm: React.FC<BookingFormProps> = ({ pricePerNight, onSubmit, isLoading }) => {
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  const [numAdults, setNumAdults] = useState(1);
+  const [numChildren, setNumChildren] = useState(0);
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.fullName.trim()) newErrors.fullName = "Họ và tên là bắt buộc"
-    if (!formData.email.trim()) newErrors.email = "Email là bắt buộc"
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Định dạng email không hợp lệ"
-    if (!formData.phone.trim()) newErrors.phone = "Số điện thoại là bắt buộc"
-    if (!formData.checkInDate) newErrors.checkInDate = "Ngày nhận phòng là bắt buộc"
-    if (!formData.checkOutDate) newErrors.checkOutDate = "Ngày trả phòng là bắt buộc"
-    if (formData.checkOutDate && formData.checkInDate && formData.checkOutDate <= formData.checkInDate) {
-      newErrors.checkOutDate = "Ngày trả phòng phải sau ngày nhận phòng"
-    }
-    if (formData.numGuests < 1) newErrors.numGuests = "Ít nhất 1 khách là bắt buộc"
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "numGuests" ? Number.parseInt(value) : value,
-    }))
-    // Xóa lỗi của trường khi người dùng bắt đầu nhập
-    if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[name]
-        return newErrors
-      })
-    }
-  }
+  const calculateTotal = () => {
+    if (!checkIn || !checkOut) return 0;
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return (diffDays > 0 ? diffDays : 1) * pricePerNight;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (validateForm()) {
-      onSubmit(formData)
-    }
-  }
-
-  // Tính số đêm
-  const calculateNights = () => {
-    if (!formData.checkInDate || !formData.checkOutDate) return 0
-    const checkIn = new Date(formData.checkInDate)
-    const checkOut = new Date(formData.checkOutDate)
-    return Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
-  }
-
-  const nights = calculateNights()
-  const totalPrice = nights * pricePerNight
+    e.preventDefault();
+    onSubmit({
+      checkInDate: checkIn,
+      checkOutDate: checkOut,
+      adults: numAdults,
+      children: numChildren
+    });
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Thông tin cá nhân */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-slate-900">Thông tin cá nhân</h3>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Họ và tên</label>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            placeholder="Nguyễn Văn A"
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-              errors.fullName ? "border-red-500" : "border-slate-300"
-            }`}
-          />
-          {errors.fullName && (
-            <div className="flex items-center gap-2 mt-1 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              {errors.fullName}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="email@example.com"
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-              errors.email ? "border-red-500" : "border-slate-300"
-            }`}
-          />
-          {errors.email && (
-            <div className="flex items-center gap-2 mt-1 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              {errors.email}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Số điện thoại</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="+84 912 345 678"
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-              errors.phone ? "border-red-500" : "border-slate-300"
-            }`}
-          />
-          {errors.phone && (
-            <div className="flex items-center gap-2 mt-1 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              {errors.phone}
-            </div>
-          )}
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="checkIn" className="block text-sm font-medium mb-1">Check In</label>
+        <input
+          id="checkIn"
+          type="datetime-local"
+          value={checkIn}
+          onChange={(e) => setCheckIn(e.target.value)}
+          className="w-full border rounded p-2"
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="checkOut" className="block text-sm font-medium mb-1">Check Out</label>
+        <input
+          id="checkOut"
+          type="datetime-local"
+          value={checkOut}
+          onChange={(e) => setCheckOut(e.target.value)}
+          className="w-full border rounded p-2"
+          required
+        />
       </div>
 
-      {/* Chi tiết đặt phòng */}
-      <div className="space-y-4 pt-6 border-t border-slate-200">
-        <h3 className="text-lg font-semibold text-slate-900">Chi tiết đặt phòng</h3>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Ngày nhận phòng</label>
-            <input
-              type="date"
-              name="checkInDate"
-              value={formData.checkInDate}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                errors.checkInDate ? "border-red-500" : "border-slate-300"
-              }`}
-            />
-            {errors.checkInDate && (
-              <div className="flex items-center gap-2 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                {errors.checkInDate}
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Ngày trả phòng</label>
-            <input
-              type="date"
-              name="checkOutDate"
-              value={formData.checkOutDate}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-                errors.checkOutDate ? "border-red-500" : "border-slate-300"
-              }`}
-            />
-            {errors.checkOutDate && (
-              <div className="flex items-center gap-2 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                {errors.checkOutDate}
-              </div>
-            )}
-          </div>
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label htmlFor="adults" className="block text-sm font-medium mb-1">Adults</label>
+          <input
+            id="adults"
+            type="number"
+            min="1"
+            value={numAdults}
+            onChange={(e) => setNumAdults(parseInt(e.target.value))}
+            className="w-full border rounded p-2"
+          />
         </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Số lượng khách</label>
-          <select
-            name="numGuests"
-            value={formData.numGuests}
-            onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition ${
-              errors.numGuests ? "border-red-500" : "border-slate-300"
-            }`}
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-              <option key={num} value={num}>
-                {num} khách{num > 1 ? "s" : ""}
-              </option>
-            ))}
-          </select>
-          {errors.numGuests && (
-            <div className="flex items-center gap-2 mt-1 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              {errors.numGuests}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Yêu cầu đặc biệt */}
-      <div className="space-y-4 pt-6 border-t border-slate-200">
-        <h3 className="text-lg font-semibold text-slate-900">Yêu cầu đặc biệt</h3>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Ghi chú thêm</label>
-          <textarea
-            name="specialRequests"
-            value={formData.specialRequests}
-            onChange={handleChange}
-            placeholder="Có yêu cầu đặc biệt hoặc lưu ý gì không? (Tùy chọn)"
-            rows={4}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+        <div className="flex-1">
+          <label htmlFor="children" className="block text-sm font-medium mb-1">Children</label>
+          <input
+            id="children"
+            type="number"
+            min="0"
+            value={numChildren}
+            onChange={(e) => setNumChildren(parseInt(e.target.value))}
+            className="w-full border rounded p-2"
           />
         </div>
       </div>
 
-      {/* Tóm tắt giá */}
-      {nights > 0 && (
-        <div className="pt-6 border-t border-slate-200 bg-slate-50 p-4 rounded-lg space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-600">
-              {nights} đêm × ${pricePerNight}/đêm
-            </span>
-            <span className="font-semibold text-slate-900">${nights * pricePerNight}</span>
-          </div>
-          <div className="border-t border-slate-200 pt-3 flex justify-between">
-            <span className="font-semibold text-slate-900">Tổng tiền</span>
-            <span className="text-2xl font-bold text-teal-600">${totalPrice}</span>
-          </div>
-        </div>
-      )}
+      <div className="pt-2 border-t flex justify-between items-center font-bold">
+        <span>Total Price:</span>
+        <span>${calculateTotal().toLocaleString()}</span>
+      </div>
 
-      {/* Nút xác nhận */}
-      <Button
-        type="submit"
-        disabled={isLoading}
-        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold shadow-md hover:brightness-105 h-12 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isLoading ? "Đang xử lý..." : "Xác nhận đặt phòng"}
-      </Button>
-
+      <div className="flex gap-3 pt-2">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-2 bg-teal-600 text-white rounded hover:bg-teal-700 flex justify-center"
+        >
+          {isLoading ? <Loader2 className="animate-spin" /> : 'Confirm Booking'}
+        </button>
+      </div>
     </form>
-  )
-}
+  );
+};
+
+export default BookingForm;

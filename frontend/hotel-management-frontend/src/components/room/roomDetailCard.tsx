@@ -34,11 +34,10 @@ export default function RoomDetailCard({
         />
         <div className="absolute top-4 right-4">
           <span
-            className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              status === "Available"
+            className={`px-3 py-1 rounded-full text-sm font-semibold ${status === "Available"
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
-            }`}
+              }`}
           >
             {status}
           </span>
@@ -56,11 +55,10 @@ export default function RoomDetailCard({
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-4 h-4 ${
-                  rating && i < Math.floor(rating)
+                className={`w-4 h-4 ${rating && i < Math.floor(rating)
                     ? "fill-yellow-400 text-yellow-400"
                     : "text-slate-300"
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -106,7 +104,9 @@ export default function RoomDetailCard({
         {/* Price and Actions */}
         <div className="flex justify-between items-center">
           <div>
-            <span className="text-2xl font-bold text-blue-600">${price}</span>
+            <span className="text-2xl font-bold text-blue-600">
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}
+            </span>
             <p className="text-xs text-slate-500">per night</p>
           </div>
 
