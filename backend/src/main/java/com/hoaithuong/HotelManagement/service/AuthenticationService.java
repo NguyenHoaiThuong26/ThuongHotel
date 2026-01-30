@@ -75,7 +75,8 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userRepository
+                .findByUsernameOrEmail(request.getUsername(), request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(),
@@ -185,12 +186,14 @@ public class AuthenticationService {
     public AuthenticationResponse socialLogin(SocialLoginRequest request) {
         // Mock implementation: Trust the email from request
         // In production: Verify 'token' with 'provider' (Google/Facebook) APIs
+        String email = request.getEmail();
 
-        var user = userRepository.findByUsername(request.getEmail())
+        var user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
                     // Auto-register if not exists
                     User newUser = User.builder()
-                            .username(request.getEmail())
+                            .username(email)
+                            .email(email)
                             .password(new BCryptPasswordEncoder(10).encode("123456")) // Default password
                             // .roles(...) // Default role
                             .build();
@@ -207,7 +210,7 @@ public class AuthenticationService {
 
     @org.springframework.transaction.annotation.Transactional
     public String generateTokenForOAuth2(String email, String firstName, String lastName) {
-        var user = userRepository.findByUsername(email)
+        var user = userRepository.findByEmail(email)
                 .map(existingUser -> {
                     // Update existing user info if missing
                     boolean changed = false;

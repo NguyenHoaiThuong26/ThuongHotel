@@ -51,6 +51,7 @@ public class ApplicationInitConfig {
                         .roles(roles)
                         .firstName("System")
                         .lastName("Admin")
+                        .enabled(true)
                         .build();
 
                 userRepository.save(user);

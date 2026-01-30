@@ -121,8 +121,8 @@ export default function ContactPage() {
               </div>
               <h3 className="text-xl font-semibold text-slate-900 mb-2">Email</h3>
               <p className="text-slate-600 mb-2">Dành cho yêu cầu và đặt phòng:</p>
-              <a href="mailto:info@thuonghotel.com" className="text-teal-600 hover:text-teal-800 font-semibold">
-                info@thuonghotel.com
+              <a href="mailto:gnouht26@gmail.com" className="text-teal-600 hover:text-teal-800 font-semibold">
+                gnouht26@gmail.com
               </a>
               <p className="text-slate-600 text-sm mt-4">Thời gian phản hồi: Trong vòng 2 giờ</p>
             </div>
@@ -136,8 +136,8 @@ export default function ContactPage() {
               </div>
               <h3 className="text-xl font-semibold text-slate-900 mb-2">Điện thoại</h3>
               <p className="text-slate-600 mb-2">Gọi quầy lễ tân:</p>
-              <a href="tel:+15551234567" className="text-teal-600 hover:text-teal-800 font-semibold">
-                +1 (555) 123-4567
+              <a href="tel:0938998972" className="text-teal-600 hover:text-teal-800 font-semibold">
+                0938998972
               </a>
               <p className="text-slate-600 text-sm mt-4">Hoạt động 24/7</p>
             </div>
@@ -152,9 +152,9 @@ export default function ContactPage() {
               <h3 className="text-xl font-semibold text-slate-900 mb-2">Địa điểm</h3>
               <p className="text-slate-600 mb-2">Đến thăm chúng tôi tại:</p>
               <p className="text-teal-600 hover:text-teal-800 font-semibold">
-                123 Luxury Avenue
+                Phường Linh Trung
                 <br />
-                Paradise City, PC 12345
+                Thủ Đức, Thành phố Hồ Chí Minh
               </p>
               <p className="text-slate-600 text-sm mt-4">Lối vào sảnh chính</p>
             </div>
@@ -167,17 +167,17 @@ export default function ContactPage() {
               <div>
                 <h4 className="font-semibold text-slate-900 mb-4">Quầy lễ tân</h4>
                 <ul className="space-y-2 text-slate-600">
-                  <li>Thứ Hai - Thứ Sáu: 7:00 AM - 11:00 PM</li>
-                  <li>Thứ Bảy - Chủ Nhật: 8:00 AM - 12:00 AM</li>
-                  <li>Ngày lễ: Hoạt động 24/7</li>
+                  <li>Thứ Hai - Chủ Nhật: 24/7</li>
+                  <li>Giờ nhận phòng (Check-in): 14:00</li>
+                  <li>Giờ trả phòng (Check-out): 12:00</li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-semibold text-slate-900 mb-4">Dịch vụ khách</h4>
                 <ul className="space-y-2 text-slate-600">
-                  <li>Concierge: 7:00 AM - 10:00 PM</li>
-                  <li>Dịch vụ phòng: 6:00 AM - 11:00 PM</li>
-                  <li>Dọn phòng: 7:00 AM - 9:00 PM</li>
+                  <li>Hỗ trợ khách hàng: 07:00 - 22:00</li>
+                  <li>Dịch vụ phòng (Room Service): 06:00 - 22:00</li>
+                  <li>Dọn phòng: 08:00 - 17:00</li>
                 </ul>
               </div>
             </div>
@@ -368,7 +368,7 @@ export default function ContactPage() {
               height="100%"
               frameBorder="0"
               style={{ border: 0 }}
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d144.9537363!3d-37.8162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4c1a1a1a1b%3A0x1a1a1a1a1a1a1a1a!2s123%20Luxury%20Avenue!5e0!3m2!1sen!2sau!4v1234567890"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.21452551595!2d106.78918677451836!3d10.871281657438018!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175276398969f7b%3A0x9672b7efd0893fc4!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBOw7RuZyBMw6JtIFRQLiBI4buTIENow60gTWluaA!5e0!3m2!1svi!2s!4v1769538013626!5m2!1svi!2s"
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

@@ -3,7 +3,10 @@ package com.hoaithuong.HotelManagement.service;
 import com.hoaithuong.HotelManagement.dto.request.RoomTypeRequest;
 import com.hoaithuong.HotelManagement.dto.response.RoomTypeResponse;
 import com.hoaithuong.HotelManagement.entity.RoomType;
+import com.hoaithuong.HotelManagement.exception.AppException;
+import com.hoaithuong.HotelManagement.exception.ErrorCode;
 import com.hoaithuong.HotelManagement.mapper.RoomTypeMapper;
+import com.hoaithuong.HotelManagement.repository.RoomRepository;
 import com.hoaithuong.HotelManagement.repository.RoomTypeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import java.util.List;
 public class RoomTypeService {
     RoomTypeRepository roomTypeRepository;
     RoomTypeMapper roomTypeMapper;
+    RoomRepository roomRepository;
 
     public RoomTypeResponse createRoomType(RoomTypeRequest request) {
         if (roomTypeRepository.existsByTypeName(request.getTypeName())) {
@@ -50,6 +54,14 @@ public class RoomTypeService {
     }
 
     public void deleteRoomType(Long id) {
+        RoomType roomType = roomTypeRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_TYPE_NOT_FOUND));
+
+        boolean hasRooms = roomRepository.existsByRoomType_RoomTypeId(id);
+        if (hasRooms) {
+            throw new AppException(ErrorCode.ROOM_TYPE_IN_USE);
+        }
         roomTypeRepository.deleteById(id);
     }
+
 }

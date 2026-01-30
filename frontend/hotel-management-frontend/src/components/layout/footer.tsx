@@ -25,10 +25,11 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-white mb-4">Liên kết nhanh</h4>
             <ul className="space-y-2 text-slate-400">
-              <li><a href="#home" className="hover:text-teal-500 transition block">Trang chủ</a></li>
-              <li><a href="#rooms" className="hover:text-teal-500 transition block">Phòng</a></li>
-              <li><a href="#amenities" className="hover:text-teal-500 transition block">Tiện nghi</a></li>
-              <li><a href="#reviews" className="hover:text-teal-500 transition block">Đánh giá</a></li>
+              <li><Link to="/home" className="hover:text-teal-500 transition block">Trang chủ</Link></li>
+              <li><Link to="/all-rooms" className="hover:text-teal-500 transition block">Phòng</Link></li>
+              <li><Link to="/my-bookings" className="hover:text-teal-500 transition block">Lịch sử đặt phòng</Link></li>
+              <li><Link to="/about" className="hover:text-teal-500 transition block">Giới thiệu</Link></li>
+              <li><Link to="/contact" className="hover:text-teal-500 transition block">Liên hệ</Link></li>
             </ul>
           </div>
 
@@ -38,7 +39,8 @@ export default function Footer() {
             <ul className="space-y-2 text-slate-400">
               <li><Link to="/login" className="hover:text-teal-500 transition block">Đăng nhập</Link></li>
               <li><Link to="/register" className="hover:text-teal-500 transition block">Đăng ký</Link></li>
-              <li><a href="#" className="hover:text-teal-500 transition block">Lịch sử đặt phòng</a></li>
+              <li><Link to="/my-bookings" className="hover:text-teal-500 transition block">Lịch sử đặt phòng</Link></li>
+              <li><Link to="/profile" className="hover:text-teal-500 transition block">Hồ sơ người dùng</Link></li>
             </ul>
           </div>
 
@@ -48,15 +50,15 @@ export default function Footer() {
             <ul className="space-y-3 text-slate-400">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 mt-0.5 text-teal-500 flex-shrink-0" />
-                <span>123 Đại lộ Sang trọng, Thành phố Thiên đường</span>
+                <span>Phường Linh Trung, Thủ Đức, Thành phố Hồ Chí Minh</span>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="w-5 h-5 mt-0.5 text-teal-500 flex-shrink-0" />
-                <span>+84 123 456 789</span>
+                <span>0938 998 972</span>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="w-5 h-5 mt-0.5 text-teal-500 flex-shrink-0" />
-                <span>info@thuonghotel.com</span>
+                <span>gnouht26@gmail.com</span>
               </li>
             </ul>
           </div>
