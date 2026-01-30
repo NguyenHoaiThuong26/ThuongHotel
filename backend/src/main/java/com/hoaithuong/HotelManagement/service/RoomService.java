@@ -7,10 +7,12 @@ import com.hoaithuong.HotelManagement.entity.RoomType;
 import com.hoaithuong.HotelManagement.exception.AppException;
 import com.hoaithuong.HotelManagement.exception.ErrorCode;
 import com.hoaithuong.HotelManagement.mapper.RoomMapper;
+import com.hoaithuong.HotelManagement.repository.BookingRepository;
 import com.hoaithuong.HotelManagement.repository.RoomRepository;
 import com.hoaithuong.HotelManagement.repository.RoomTypeRepository;
 import com.hoaithuong.HotelManagement.repository.RoomImageRepository;
 import com.hoaithuong.HotelManagement.entity.RoomImage;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,7 +35,7 @@ import java.util.List;
 @Slf4j
 public class RoomService {
     RoomRepository roomRepository;
-    com.hoaithuong.HotelManagement.repository.BookingRepository bookingRepository;
+    BookingRepository bookingRepository;
     RoomTypeRepository roomTypeRepository;
     RoomImageRepository roomImageRepository;
     RoomMapper roomMapper;
@@ -74,6 +76,7 @@ public class RoomService {
     }
 
     // create a room
+    @Transactional
     public RoomResponse createRoom(RoomRequest request, List<MultipartFile> images) {
         if (roomRepository.existsByRoomNumber(request.getRoomNumber())) {
             throw new AppException(ErrorCode.ROOM_ALREADY_EXISTS);
@@ -82,9 +85,17 @@ public class RoomService {
         RoomType roomType = roomTypeRepository.findById(request.getRoomTypeId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_TYPE_NOT_FOUND));
 
+        if (request.getPrice() < 0)
+            throw new AppException(ErrorCode.INVALID_PRICE);
+
+        if (request.getMaxAdults() <= 0)
+            throw new AppException(ErrorCode.INVALID_CAPACITY);
+
+
         Room room = roomMapper.toRoom(request);
         room.setRoomType(roomType);
         room.setAmenities(request.getAmenities());
+        room.setStatus("AVAILABLE");
 
         Room savedRoom = roomRepository.save(room);
 
@@ -125,7 +136,7 @@ public class RoomService {
 
             return "http://localhost:8080/hotel/uploads/rooms/" + fileName; // Return full URL or relative path
         } catch (IOException e) {
-            throw new RuntimeException("Could not store file " + file.getOriginalFilename() + ". Please try again!", e);
+            throw new RuntimeException("Không thể lưu trữ tập tin " + file.getOriginalFilename() + ". Vui lòng thử lại!", e);
         }
     }
 
@@ -136,6 +147,11 @@ public class RoomService {
 
         RoomType roomType = roomTypeRepository.findById(request.getRoomTypeId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_TYPE_NOT_FOUND));
+
+        if (!existingRoom.getRoomNumber().equals(request.getRoomNumber()) &&
+                roomRepository.existsByRoomNumber(request.getRoomNumber())) {
+            throw new AppException(ErrorCode.ROOM_ALREADY_EXISTS);
+        }
 
         existingRoom.setRoomNumber(request.getRoomNumber());
         existingRoom.setPrice(request.getPrice());
@@ -192,6 +208,11 @@ public class RoomService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
+        boolean hasActiveBooking = bookingRepository.existsActiveBooking(roomId);
+        if (hasActiveBooking) {
+            throw new AppException(ErrorCode.ROOM_HAS_ACTIVE_BOOKING);
+        }
+
         room.setDeleted(true);
         roomRepository.save(room);
     }
@@ -203,5 +224,12 @@ public class RoomService {
 
         room.setStatus(status);
         return roomMapper.toRoomResponse(roomRepository.save(room));
+    }
+
+
+    public List<Room> getAllRoomsForAI() {
+        return roomRepository.findAll().stream()
+                .filter(room -> !room.isDeleted())
+                .toList();
     }
 }

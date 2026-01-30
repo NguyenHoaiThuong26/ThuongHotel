@@ -100,7 +100,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ pricePerNight, onSubmit, isLo
           disabled={isLoading}
           className="w-full py-2 bg-teal-600 text-white rounded hover:bg-teal-700 flex justify-center"
         >
-          {isLoading ? <Loader2 className="animate-spin" /> : 'Confirm Booking'}
+          {isLoading ? <Loader2 className="animate-spin" /> : 'Xác nhận đặt phòng'}
         </button>
       </div>
     </form>

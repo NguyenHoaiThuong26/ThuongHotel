@@ -6,6 +6,8 @@ import com.hoaithuong.HotelManagement.entity.Booking;
 import com.hoaithuong.HotelManagement.entity.QRCode;
 import com.hoaithuong.HotelManagement.entity.Room;
 import com.hoaithuong.HotelManagement.entity.User;
+import com.hoaithuong.HotelManagement.exception.AppException;
+import com.hoaithuong.HotelManagement.exception.ErrorCode;
 import com.hoaithuong.HotelManagement.mapper.BookingMapper;
 import com.hoaithuong.HotelManagement.repository.BookingRepository;
 import com.hoaithuong.HotelManagement.repository.QRCodeRepository;
@@ -37,29 +39,52 @@ public class BookingService {
     public BookingResponse createBooking(BookingRequest request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
+        int adults = request.getNumAdults();
+        int children = request.getNumChildren();
 
         User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Room room = roomRepository.findById(request.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        Room room = roomRepository.findByIdForUpdate(request.getRoomId());
+
+        // Validate số người lớn
+        if (adults > room.getMaxAdults()) {
+            throw new IllegalStateException(
+                    "Số người lớn vượt quá giới hạn phòng (tối đa " + room.getMaxAdults() + ")"
+            );
+        }
+
+        // Validate số trẻ em
+        if (children > room.getMaxChildren()) {
+            throw new IllegalStateException(
+                    "Số trẻ em vượt quá giới hạn phòng (tối đa " + room.getMaxChildren() + ")"
+            );
+        }
+
+        int totalGuests = request.getNumAdults() + request.getNumChildren();
+        int maxGuests = room.getMaxAdults() + room.getMaxChildren();
+
+        if (totalGuests > maxGuests) {
+            throw new AppException(ErrorCode.INVALID_CAPACITY);
+        }
 
         // Check for date conflicts
         List<Booking> overlappingBookings = bookingRepository.findBookingsAtSameTime(
                 request.getRoomId(), request.getCheckIn(), request.getCheckOut());
         if (!overlappingBookings.isEmpty()) {
-            throw new IllegalStateException("Room is already booked for the selected dates");
+            throw new AppException(ErrorCode.ROOM_ALREADY_BOOKED);
         }
 
         // Basic availability check
-        if (!"AVAILABLE".equalsIgnoreCase(room.getStatus())) {
-            // Optional: if room status is maintained separately
-            // throw new IllegalStateException("Room is not available");
+        if ("MAINTENANCE".equalsIgnoreCase(room.getStatus())) {
+            throw new AppException(ErrorCode.ROOM_IN_MAINTENANCE);
         }
 
-        long days = ChronoUnit.DAYS.between(request.getCheckIn(), request.getCheckOut());
-        if (days <= 0)
-            days = 1;
+        long days = ChronoUnit.DAYS.between(
+                request.getCheckIn().toLocalDate(),
+                request.getCheckOut().toLocalDate()
+        );
+        if (days <= 0) days = 1;
         Double totalPrice = room.getPrice() * days;
 
         Booking booking = Booking.builder()
@@ -99,16 +124,17 @@ public class BookingService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         return bookingRepository.findByUser_UserId(user.getUserId()).stream()
                 .map(bookingMapper::toBookingResponse)
                 .toList();
     }
 
+    @Transactional
     public void cancelBooking(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         // Check ownership or admin
         var context = SecurityContextHolder.getContext();
@@ -127,12 +153,13 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
+    @Transactional
     public BookingResponse checkIn(String qrData) {
         QRCode qrCode = qrCodeRepository.findByQrData(qrData)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid QR Code"));
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_QR_CODE));
 
         if (!"ACTIVE".equals(qrCode.getStatus())) {
-            throw new IllegalStateException("QR Code is not active");
+            throw new AppException(ErrorCode.QR_CODE_NOT_ACTIVE);
         }
 
         Booking booking = qrCode.getBooking();
@@ -141,13 +168,13 @@ public class BookingService {
 
     public BookingResponse checkInByBookingId(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
         return performCheckIn(booking);
     }
 
     private BookingResponse performCheckIn(Booking booking) {
         if (!"BOOKED".equals(booking.getStatus())) {
-            throw new IllegalStateException("Booking must be in BOOKED status to check in");
+            throw new AppException(ErrorCode.BOOKING_NOT_BOOKED);
         }
 
         booking.setStatus("CHECKED_IN");
@@ -169,12 +196,13 @@ public class BookingService {
         return bookingMapper.toBookingResponse(booking);
     }
 
+    @Transactional
     public BookingResponse checkOut(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         if (!"CHECKED_IN".equals(booking.getStatus())) {
-            throw new IllegalStateException("Booking must be in CHECKED_IN status to check out");
+            throw new AppException(ErrorCode.BOOKING_NOT_CHECKED_IN);
         }
 
         booking.setStatus("CHECKED_OUT"); // Or COMPLETED? Let's use CHECKED_OUT or COMPLETED. User said check-out.
@@ -196,12 +224,13 @@ public class BookingService {
         return bookingRepository.save(booking) != null ? bookingMapper.toBookingResponse(booking) : null;
     }
 
+    @Transactional
     public void approveBooking(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         if (!"PENDING".equals(booking.getStatus())) {
-            throw new IllegalStateException("Only PENDING bookings can be approved");
+            throw new AppException(ErrorCode.BOOKING_NOT_PENDING);
         }
 
         booking.setStatus("BOOKED");
@@ -216,15 +245,15 @@ public class BookingService {
 
     public byte[] getBookingQRCode(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
         if (booking.getQrCode() == null)
-            throw new IllegalArgumentException("No QR code for this booking");
+            throw new AppException(ErrorCode.QR_CODE_NOT_FOUND);
 
         try {
             return com.hoaithuong.HotelManagement.util.QRCodeGenerator
                     .generateQRCodeImage(booking.getQrCode().getQrData(), 250, 250);
         } catch (Exception e) {
-            throw new RuntimeException("Error generating QR code", e);
+            throw new RuntimeException("Lỗi khi tạo mã QR", e);
         }
     }
 

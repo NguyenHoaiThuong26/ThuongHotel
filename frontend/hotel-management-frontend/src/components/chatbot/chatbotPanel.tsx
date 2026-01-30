@@ -6,10 +6,6 @@ import { ChatInput } from "../../components/chatbot/chatInput"
 import { QuickReplies } from "../../components/chatbot/quickReplies"
 import { API_BASE_URL } from "../../configuration/configuration"
 
-// OpenRouter config from environment variables
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-const OPENROUTER_MODEL = "openai/gpt-3.5-turbo"; // Or any other model supported by OpenRouter
-
 interface Message {
   id: string
   text: string
@@ -67,57 +63,35 @@ export function ChatbotPanel() {
     fetchRoomsForContext()
   }, [])
 
-  const callOpenRouter = async (userMessage: string) => {
-    if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes("YOUR_OPENROUTER_API_KEY_HERE")) {
-      // Fallback if no key
-      return "Xin lỗi, tôi chưa được cấu hình API Key để trả lời thông minh. Vui lòng liên hệ admin.";
+const callBackendAI = async (userMessage: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: userMessage,
+        roomContext: roomContext
+      })
+    });
+
+    const data = await response.json();
+
+    console.log("AI response:", data);
+
+    if (data.code === 0) {
+      return data.result.reply; // lấy reply
+    } else {
+      return "Xin lỗi, AI không thể trả lời lúc này.";
     }
 
-    try {
-      const systemPrompt = `
-You are a helpful and polite hotel receptionist AI. 
-Here is the current list of rooms and their details, prices, and status in JSON format:
-${roomContext}
-
-When answering:
-1. Use Vietnamese language.
-2. Be professional and welcoming.
-3. Use the provided room data to answer questions about availability, price, amenities, etc.
-4. Always use VND (Vietnamese Dong) for currency.
-4. If the user asks to book, guide them to use the booking button on the room list.
-5. If the user asks about something not in the data, try to be helpful or ask them to contact support.
-`;
-
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": window.location.origin, // Required by OpenRouter
-          "X-Title": "Hotel Management AI" // Optional
-        },
-        body: JSON.stringify({
-          model: OPENROUTER_MODEL,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userMessage }
-          ]
-        })
-      });
-
-      const data = await response.json();
-      if (data.choices && data.choices.length > 0) {
-        return data.choices[0].message.content;
-      } else {
-        console.error("OpenRouter Error:", data);
-        return "Xin lỗi, tôi đang gặp sự cố khi suy nghĩ. Vui lòng thử lại sau.";
-      }
-
-    } catch (error) {
-      console.error("AI Call Failed", error);
-      return "Xin lỗi, kết nối đến bộ não AI bị gián đoạn.";
-    }
+  } catch (error) {
+    console.error("Backend AI error:", error);
+    return "Xin lỗi, kết nối đến AI bị gián đoạn.";
   }
+};
+
 
   const handleSendMessage = async (message: string) => {
     const newUserMessage: Message = {
@@ -131,7 +105,7 @@ When answering:
     setIsLoading(true)
 
     // Call AI
-    const aiResponse = await callOpenRouter(message);
+    const aiResponse = await callBackendAI(message);
 
     const newBotMessage: Message = {
       id: (Date.now() + 1).toString(),

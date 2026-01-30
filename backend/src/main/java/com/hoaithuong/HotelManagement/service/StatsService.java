@@ -28,30 +28,64 @@ public class StatsService {
         long cancelledBookings = 0;
         long activeBookings = 0;
 
-        Map<String, StatsResponse.MonthlyStat> monthlyMap = new HashMap<>();
+        Map<String, Integer> bookingCountMap = new HashMap<>();
+        Map<String, Double> revenueMap = new HashMap<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 
         for (Booking b : bookings) {
             String status = b.getStatus();
+
+            // 1️⃣ Cancelled
             if ("CANCELLED".equalsIgnoreCase(status)) {
                 cancelledBookings++;
-            } else {
-                totalRevenue += (b.getTotalPrice() != null ? b.getTotalPrice() : 0);
-                if ("BOOKED".equalsIgnoreCase(status) || "CHECKED_IN".equalsIgnoreCase(status)) {
-                    activeBookings++;
-                }
+                continue;
+            }
 
-                // Chart Data (Group by Year-Month)
-                String monthKey = b.getCheckIn().format(DateTimeFormatter.ofPattern("yyyy-MM"));
-                monthlyMap.putIfAbsent(monthKey,
-                        StatsResponse.MonthlyStat.builder().month(monthKey).revenue(0).bookings(0).build());
+            // 2️⃣ Active bookings
+            if (List.of("PENDING", "BOOKED", "CHECKED_IN").contains(status)) {
+                activeBookings++;
+            }
 
-                StatsResponse.MonthlyStat stat = monthlyMap.get(monthKey);
-                stat.setBookings(stat.getBookings() + 1);
-                stat.setRevenue(stat.getRevenue() + (b.getTotalPrice() != null ? b.getTotalPrice() : 0));
+            // 3️⃣ Booking count theo CHECK-IN
+            String bookingMonth = b.getCheckIn().format(formatter);
+            bookingCountMap.put(bookingMonth,
+                    bookingCountMap.getOrDefault(bookingMonth, 0) + 1);
+
+            // 4️⃣ Revenue theo CHECK-OUT
+            if (List.of("CHECKED_OUT", "COMPLETED").contains(status) && b.getTotalPrice() != null) {
+                totalRevenue += b.getTotalPrice();
+
+                String revenueMonth = b.getCheckOut().format(formatter);
+                revenueMap.put(revenueMonth,
+                        revenueMap.getOrDefault(revenueMonth, 0.0) + b.getTotalPrice());
             }
         }
 
-        List<StatsResponse.MonthlyStat> trends = new ArrayList<>(monthlyMap.values());
+        // 5️⃣ Merge booking + revenue thành MonthlyStat
+        Map<String, StatsResponse.MonthlyStat> monthlyStats = new HashMap<>();
+
+        for (String month : bookingCountMap.keySet()) {
+            monthlyStats.put(month,
+                    StatsResponse.MonthlyStat.builder()
+                            .month(month)
+                            .bookings(bookingCountMap.get(month))
+                            .revenue(0)
+                            .build());
+        }
+
+        for (String month : revenueMap.keySet()) {
+            monthlyStats.putIfAbsent(month,
+                    StatsResponse.MonthlyStat.builder()
+                            .month(month)
+                            .bookings(0)
+                            .revenue(0)
+                            .build());
+
+            monthlyStats.get(month).setRevenue(revenueMap.get(month));
+        }
+
+        List<StatsResponse.MonthlyStat> trends = new ArrayList<>(monthlyStats.values());
         trends.sort((a, b) -> a.getMonth().compareTo(b.getMonth()));
 
         return StatsResponse.builder()
@@ -59,8 +93,10 @@ public class StatsService {
                 .totalRevenue(totalRevenue)
                 .activeBookings(activeBookings)
                 .cancelledBookings(cancelledBookings)
+                .bookingTrend(trends)
                 .revenueTrend(trends)
-                .bookingTrend(trends) // Same for now
                 .build();
     }
+
+
 }

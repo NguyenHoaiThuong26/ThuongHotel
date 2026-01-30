@@ -51,7 +51,7 @@ export default function BookingConfirmationModal({ isOpen, bookingData }: Bookin
 
           {/* Chi tiết đặt phòng */}
           <div className="space-y-6">
-            <h3 className="text-xl font-serif font-bold text-slate-900">Chi tiết đặt phòng</h3>
+            <h3 className="text-xl font-bold text-slate-900">Chi tiết đặt phòng</h3>
 
             <div className="grid md:grid-cols-2 gap-6">
               {/* Thông tin khách */}

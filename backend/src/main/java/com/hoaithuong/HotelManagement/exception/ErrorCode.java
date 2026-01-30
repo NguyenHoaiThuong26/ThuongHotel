@@ -31,7 +31,25 @@ public enum ErrorCode {
     INVALID_NUM_ADULTS(1021, "Số lượng người lớn không hợp lệ", HttpStatus.BAD_REQUEST),
     INVALID_NUM_CHILDREN(1022, "Số lượng trẻ em không hợp lệ", HttpStatus.BAD_REQUEST),
     USER_NOT_VERIFIED(1023, "Tài khoản chưa được xác thực. Vui lòng kiểm tra email của bạn.", HttpStatus.UNAUTHORIZED),
-    INVALID_OLD_PASSWORD(1024, "Mật khẩu cũ không chính xác", HttpStatus.BAD_REQUEST);
+    INVALID_OLD_PASSWORD(1024, "Mật khẩu cũ không chính xác", HttpStatus.BAD_REQUEST),
+    EMAIL_EXISTED(1025, "Người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
+    INVALID_PRICE(1026, "Giá phòng không hợp lệ", HttpStatus.BAD_REQUEST),
+    INVALID_CAPACITY(1027, "Sức chứa không hợp lệ", HttpStatus.BAD_REQUEST),
+    ROOM_HAS_ACTIVE_BOOKING(1028, "Phòng đang được đặt", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_IN_USE(1029, "Loại phòng đang được sử dụng", HttpStatus.BAD_REQUEST),
+    MAX_NUM_ADULTS(1030, "Loại phòng đang được sử dụng", HttpStatus.BAD_REQUEST),
+    MAX_NUM_CHILDREN(1031, "Loại phòng đang được sử dụng", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND(1032, "Không tìm thấy người dùng", HttpStatus.NOT_FOUND),
+    ROOM_ALREADY_BOOKED(1033, "Phòng đã được đặt trong khoảng thời gian này", HttpStatus.BAD_REQUEST),
+    ROOM_IN_MAINTENANCE(1034, "Phòng đang bảo trì", HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_FOUND(1035, "Không tim thấy đơn đặt phòng", HttpStatus.NOT_FOUND),
+    INVALID_QR_CODE(1036, "Mã QR không hợp lệ", HttpStatus.BAD_REQUEST),
+    QR_CODE_NOT_ACTIVE(1037, "Mã QR không hoạt động", HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_BOOKED(1038, "Chỉ có thể check-in khi booking ở trạng thái BOOKED", HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_CHECKED_IN(1039, "Chỉ có thể check-out khi booking ở trạng thái CHECKED_IN", HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_PENDING(1040, "Chỉ có thể duyệt booking ở trạng thái PENDING", HttpStatus.BAD_REQUEST),
+    QR_CODE_NOT_FOUND(1041, "Booking này không có mã QR", HttpStatus.BAD_REQUEST);
+
 
     ;
 

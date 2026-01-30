@@ -23,7 +23,7 @@ export default function HomePage() {
   }
 
   const rooms = [
-    { id: 1, name: "Suite Deluxe", price: "2.990.000 VND", image: "/images/luxury-hotel-deluxe-suite.jpg", description: "Phòng suite rộng rãi với tầm nhìn thành phố và tiện nghi hiện đại" },
+    { id: 1, name: "Suite Deluxe", price: "2.990.000 VND", image: "/images/about-img.jpg", description: "Phòng suite rộng rãi với tầm nhìn thành phố và tiện nghi hiện đại" },
     { id: 2, name: "Phòng Nhìn Biển", price: "3.490.000 VND", image: "/images/luxury-hotel-ocean-view.jpg", description: "Phòng cao cấp nhìn ra biển với ban công riêng" },
     { id: 3, name: "Suite Tổng Thống", price: "5.990.000 VND", image: "/images/luxury-hotel-presidential-suite.jpg", description: "Sang trọng tối đa với phòng khách và phòng ăn riêng biệt" },
     { id: 4, name: "Phòng Vườn", price: "2.490.000 VND", image: "/images/luxury-hotel-garden-view.jpg", description: "Phòng yên tĩnh với lối ra vườn riêng" },
@@ -166,9 +166,12 @@ export default function HomePage() {
 
                   <div className="flex justify-between items-center mt-auto">
                     <span className="text-2xl font-bold text-teal-500">{room.price}</span>
-                    <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:brightness-105 font-semibold shadow-md">
-                      Xem chi tiết
-                    </Button>
+                    <Link to="/all-rooms">
+                      <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:brightness-105 font-semibold shadow-md">
+                        Xem chi tiết
+                      </Button>
+                    </Link>
+                    
 
                   </div>
                 </div>

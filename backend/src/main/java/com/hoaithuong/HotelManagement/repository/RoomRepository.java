@@ -1,7 +1,10 @@
 package com.hoaithuong.HotelManagement.repository;
 
 import com.hoaithuong.HotelManagement.entity.Room;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,6 +15,8 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     List<Room> findByStatus(String status);
 
     List<Room> findByRoomType_RoomTypeId(Long roomTypeId);
+
+    boolean existsByRoomType_RoomTypeId(Long roomTypeId);
 
     List<Room> findByRoomType_RoomTypeIdAndStatus(Long roomTypeId, String status);
 
@@ -26,4 +31,9 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     List<Room> searchRooms(@org.springframework.data.repository.query.Param("roomNumber") String roomNumber,
             @org.springframework.data.repository.query.Param("status") String status,
             @org.springframework.data.repository.query.Param("roomTypeId") Long roomTypeId);
+
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM Room r WHERE r.roomId = :roomId")
+    Room findByIdForUpdate(String roomId);
 }

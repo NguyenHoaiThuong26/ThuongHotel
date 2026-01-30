@@ -21,22 +21,24 @@ const CheckInScanner: React.FC = () => {
                 setError(null);
                 setQrInput('');
             } else {
-                setError(data.message || 'Check-in failed');
+                setError(data.message || 'Check-in thất bại');
                 setResult(null);
             }
         } catch (err) {
-            setError('Network error');
+            setError('Lỗi kết nối mạng');
         }
     };
 
     return (
         <div className="p-6 max-w-lg mx-auto">
             <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <Scan className="w-6 h-6" /> Reception Check-In
+                <Scan className="w-6 h-6" /> Check-In Lễ Tân
             </h1>
 
             <form onSubmit={handleScan} className="mb-6">
-                <label className="block text-sm font-medium mb-2">Scan QR Code (or type code)</label>
+                <label className="block text-sm font-medium mb-2">
+                    Quét mã QR (hoặc nhập mã)
+                </label>
                 <div className="flex gap-2">
                     <input
                         value={qrInput}
@@ -45,7 +47,10 @@ const CheckInScanner: React.FC = () => {
                         className="flex-1 border rounded p-2"
                         autoFocus
                     />
-                    <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded font-bold hover:bg-teal-700">
+                    <button
+                        type="submit"
+                        className="bg-teal-600 text-white px-4 py-2 rounded font-bold hover:bg-teal-700"
+                    >
                         Check In
                     </button>
                 </div>
@@ -55,10 +60,18 @@ const CheckInScanner: React.FC = () => {
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg flex items-start gap-3">
                     <CheckCircle className="text-green-600 w-6 h-6 mt-1" />
                     <div>
-                        <h3 className="font-bold text-green-800">Check-In Successful!</h3>
-                        <p className="text-sm text-green-700">Booking ID: {result.bookingId}</p>
-                        <p className="text-sm text-green-700">Guest: {result.userId}</p>
-                        <p className="text-sm text-green-700">Room: {result.roomId}</p>
+                        <h3 className="font-bold text-green-800">
+                            Check-In Thành Công!
+                        </h3>
+                        <p className="text-sm text-green-700">
+                            Mã đặt phòng: {result.bookingId}
+                        </p>
+                        <p className="text-sm text-green-700">
+                            Khách hàng: {result.userId}
+                        </p>
+                        <p className="text-sm text-green-700">
+                            Phòng: {result.roomId}
+                        </p>
                     </div>
                 </div>
             )}

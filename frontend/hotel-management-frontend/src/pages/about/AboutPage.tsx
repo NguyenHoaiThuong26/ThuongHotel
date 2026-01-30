@@ -84,7 +84,7 @@ export default function AboutUsPage() {
             </div>
             <div className="relative">
               <img
-                src="/luxury-hotel-deluxe-suite.jpg"
+                src="/images/about-img.jpg"
                 alt="Sảnh khách sạn"
                 className="rounded-xl shadow-2xl w-full h-96 object-cover"
               />
@@ -170,7 +170,7 @@ export default function AboutUsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">Thông tin tác giả</h2>
           <p className="text-gray-600 text-lg leading-relaxed">
-            Website này được thực hiện bởi <strong>Hoài Thương</strong>, sinh viên <strong>Đại học Nông Lâm</strong>.
+            Website này được thực hiện bởi <strong>Nguyễn Hoài Thương</strong>, sinh viên <strong>Đại học Nông Lâm TP. HCM</strong>.
           </p>
         </div>
       </section>
@@ -186,7 +186,7 @@ export default function AboutUsPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/rooms"
+              to="/all-rooms"
               className="px-8 py-4 bg-white text-teal-600 font-bold rounded-lg hover:shadow-lg hover:scale-105 transition-all inline-block"
             >
               Xem phòng
